@@ -9,8 +9,10 @@ interface Message {
 
 const AIConsultant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const teacherAvatar = "https://lh3.googleusercontent.com/d/1lCegcUF3-GYyTPbSidhJdSfU_AZdyj8p=s1000";
+  
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Sistem EduSKPT AI diaktifkan. Saya sedia membantu anda dengan konsultasi data kurikulum dan pengurusan akademik SKPTEN melalui integrasi Cgu Din. Apakah input yang anda perlukan?' }
+    { role: 'model', text: 'Sistem EduSKPT AI diaktifkan. Saya Cgu Din, sedia membantu anda dengan konsultasi data kurikulum dan pengurusan akademik SKPTEN. Apa yang boleh saya bantu hari ini?' }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -57,10 +59,8 @@ const AIConsultant: React.FC = () => {
           <div className="p-6 bg-gradient-to-r from-blue-900 to-slate-900 text-white flex justify-between items-center border-b border-white/5">
             <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)] border border-blue-400/50 relative z-10">
-                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
+                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)] border border-blue-400/50 relative z-10 overflow-hidden">
+                  <img src={teacherAvatar} alt="Cgu Din" className="w-full h-full object-contain scale-125 translate-y-1" />
                 </div>
                 <div className="absolute inset-0 bg-blue-500 rounded-2xl animate-ping opacity-20"></div>
               </div>
@@ -68,7 +68,7 @@ const AIConsultant: React.FC = () => {
                 <h4 className="font-black text-sm uppercase tracking-[0.2em] text-blue-400">EduSKPT AI</h4>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                  <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest text-emerald-400/80">Cgu Din Core Intelligence Online</span>
+                  <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest">Cgu Din Intelligence Online</span>
                 </div>
               </div>
             </div>
@@ -153,7 +153,7 @@ const AIConsultant: React.FC = () => {
       {/* Futuristic Trigger Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-500 hover:scale-110 active:scale-90 relative group ${
+        className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-500 hover:scale-110 active:scale-90 relative group overflow-hidden ${
           isOpen ? 'bg-slate-800 rotate-90' : 'bg-blue-600'
         }`}
       >
@@ -163,11 +163,9 @@ const AIConsultant: React.FC = () => {
              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
            </svg>
         ) : (
-          <div className="relative">
-             <svg className="w-8 h-8 text-white group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-             </svg>
-             <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-blue-600 rounded-full"></span>
+          <div className="relative w-full h-full flex items-center justify-center">
+             <img src={teacherAvatar} alt="Cgu Din" className="w-full h-full object-contain scale-150 translate-y-2 group-hover:scale-[1.6] transition-transform" />
+             <span className="absolute top-2 right-2 w-3 h-3 bg-emerald-500 border-2 border-blue-600 rounded-full"></span>
           </div>
         )}
       </button>

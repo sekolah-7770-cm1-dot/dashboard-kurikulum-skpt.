@@ -80,6 +80,11 @@ const App: React.FC = () => {
               onNavigate={(view) => setCurrentView(view)} 
               currentView={currentView}
            />
+           {currentView === 'dashboard' && (
+             <div className="mt-8">
+               <Announcements events={takwimEvents} loading={loading} />
+             </div>
+           )}
         </section>
 
         {currentView === 'dashboard' ? (
@@ -100,13 +105,8 @@ const App: React.FC = () => {
                />
             </section>
 
-            <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch border-b border-slate-100 pb-12">
-              <div className="lg:col-span-8 flex flex-col">
-                <AIInsights events={takwimEvents} loading={loading} />
-              </div>
-              <div className="lg:col-span-4 flex flex-col">
-                <Announcements events={takwimEvents} loading={loading} />
-              </div>
+            <section className="animate-fade-in" style={{ animationDelay: '0.25s' }}>
+               <AIInsights events={takwimEvents} loading={loading} />
             </section>
 
             <section id="takwim-seksyen" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">

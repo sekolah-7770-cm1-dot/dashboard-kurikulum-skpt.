@@ -1,5 +1,5 @@
 {
-  "name": "Dashboard Kurikulum SKPT",
-  "description": "Dashboard pengurusan kurikulum profesional dan interaktif untuk SKPT (SK Pekan Tenom), menampilkan sinkronisasi data masa nyata dan wawasan dipacu AI menggunakan Gemini.",
+  "name": "Dashboard Kurikulum SKPTEN",
+  "description": "Dashboard pengurusan kurikulum profesional dan interaktif untuk SKPTEN (SK Pekan Tenom), menampilkan sinkronisasi data masa nyata dan wawasan dipacu AI menggunakan Gemini.",
   "requestFramePermissions": []
 }

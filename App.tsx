@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { TakwimEvent, ProgramActivity, PBDRecord, HeadcountRecord } from './types';
-import { fetchTakwim, fetchPrograms, fetchFolderImages, fetchPBD, fetchHeadcount } from './services/csvService';
-import { TAKWIM_CSV_URL, PROGRAMS_CSV_URL, FOLDER_IMAGES_CSV_URL, PBD_CSV_URL, HEADCOUNT_CSV_URL } from './constants';
+import { TakwimEvent, ProgramActivity, DashboardView, TeacherRecord } from './types';
+import { fetchTakwim, fetchPrograms, fetchFolderImages, fetchTeachers } from './services/csvService';
+import { TAKWIM_CSV_URL, PROGRAMS_CSV_URL, FOLDER_IMAGES_CSV_URL, TEACHERS_CSV_URL } from './constants';
 import DashboardHeader from './components/DashboardHeader';
 import QuickAccess from './components/QuickAccess';
 import TakwimCard from './components/TakwimCard';
@@ -14,31 +14,36 @@ import TeacherPortals from './components/TeacherPortals';
 import ActivityGallery from './components/ActivityGallery';
 import AIConsultant from './components/AIConsultant';
 import StatCards from './components/StatCards';
+import CartaOrganisasi from './components/CartaOrganisasi';
+import EOPRKurikulum from './components/EOPRKurikulum';
+import PanitiaPage from './components/PanitiaPage';
+import TakwimPage from './components/TakwimPage';
+import BukuPengurusan from './components/BukuPengurusan';
+import SenaraiGuru from './components/SenaraiGuru';
+import Mukadimah from './components/Mukadimah';
 
 const App: React.FC = () => {
+  const [currentView, setCurrentView] = useState<DashboardView>('dashboard');
   const [takwimEvents, setTakwimEvents] = useState<TakwimEvent[]>([]);
   const [programs, setPrograms] = useState<ProgramActivity[]>([]);
+  const [teachers, setTeachers] = useState<TeacherRecord[]>([]);
   const [folderImages, setFolderImages] = useState<{url: string, name: string, dateStr?: string}[]>([]);
-  const [pbdData, setPbdData] = useState<PBDRecord[]>([]);
-  const [headcountData, setHeadcountData] = useState<HeadcountRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [takwimData, programsData, imagesData, pbdRecords, hcRecords] = await Promise.all([
+      const [takwimData, programsData, imagesData, teachersData] = await Promise.all([
         fetchTakwim(TAKWIM_CSV_URL),
         fetchPrograms(PROGRAMS_CSV_URL),
         fetchFolderImages(FOLDER_IMAGES_CSV_URL),
-        fetchPBD(PBD_CSV_URL),
-        fetchHeadcount(HEADCOUNT_CSV_URL)
+        fetchTeachers(TEACHERS_CSV_URL)
       ]);
 
       setTakwimEvents(takwimData);
       setPrograms(programsData);
       setFolderImages(imagesData);
-      setPbdData(pbdRecords);
-      setHeadcountData(hcRecords);
+      setTeachers(teachersData);
       setLoading(false);
     } catch (error) {
       console.error("Data load failed:", error);
@@ -50,50 +55,20 @@ const App: React.FC = () => {
     loadData();
   }, [loadData]);
 
-  // Statistik Dinamik SKPT
   const globalStats = useMemo(() => {
-    const totalS = pbdData.reduce((acc, curr) => acc + (Number(curr.tp1) + Number(curr.tp2) + Number(curr.tp3) + Number(curr.tp4) + Number(curr.tp5) + Number(curr.tp6)), 0);
-    const mtmS = pbdData.reduce((acc, curr) => acc + (Number(curr.tp3) + Number(curr.tp4) + Number(curr.tp5) + Number(curr.tp6)), 0);
-    const excellenceS = pbdData.reduce((acc, curr) => acc + (Number(curr.tp5) + Number(curr.tp6)), 0);
-    
-    const mtmPct = totalS > 0 ? ((mtmS / totalS) * 100).toFixed(1) : "0.0";
-    const excellencePct = totalS > 0 ? ((excellenceS / totalS) * 100).toFixed(1) : "0.0";
-    
-    const totalETR = headcountData.reduce((acc, curr) => acc + Number(curr.etr), 0);
-    const totalAR = headcountData.reduce((acc, curr) => acc + Number(curr.ar), 0);
-    const hcGap = totalETR > 0 ? ((totalAR / totalETR) * 100).toFixed(1) : "0.0";
+    const totalEvents = takwimEvents.length;
+    const now = new Date();
+    const currentMonthEvents = takwimEvents.filter(e => e.date.getMonth() === now.getMonth() && e.date.getFullYear() === now.getFullYear()).length;
+    const uniqueUnits = new Set(takwimEvents.map(e => e.unit)).size;
+    const upcomingEvents = takwimEvents.filter(e => e.date >= now).length;
 
     return [
-      { 
-        label: 'Enrolmen Dinilai', 
-        value: totalS.toLocaleString(), 
-        grow: 'Data', 
-        desc: 'Jumlah Keseluruhan Murid (TP1-TP6)', 
-        color: 'from-slate-600 to-slate-800' 
-      },
-      { 
-        label: 'Kadar MTM (Lulus)', 
-        value: `${mtmPct}%`, 
-        grow: 'KPI', 
-        desc: `Pencapaian TP3 - TP6`, 
-        color: 'from-blue-600 to-blue-800' 
-      },
-      { 
-        label: 'Kualiti (TP5 & TP6)', 
-        value: excellenceS.toLocaleString(), 
-        grow: 'Prestasi', 
-        desc: `${excellencePct}% Murid Cemerlang`, 
-        color: 'from-emerald-600 to-emerald-800' 
-      },
-      { 
-        label: 'Pencapaian Headcount', 
-        value: `${hcGap}%`, 
-        grow: 'Target', 
-        desc: `AR vs ETR (Target vs Sebenar)`, 
-        color: 'from-purple-600 to-purple-800' 
-      },
+      { label: 'Aktiviti Tahunan', value: totalEvents.toLocaleString(), grow: 'Total', desc: 'Jumlah Program Terjadual 2026', color: 'from-slate-600 to-slate-800' },
+      { label: 'Aktiviti Bulan Ini', value: currentMonthEvents.toString(), grow: 'Semasa', desc: `Fokus Program Bulan Ini`, color: 'from-blue-600 to-blue-800' },
+      { label: 'Unit / Panitia', value: uniqueUnits.toString(), grow: 'Aktif', desc: `Unit Terlibat Dalam Takwim`, color: 'from-emerald-600 to-emerald-800' },
+      { label: 'Program Mendatang', value: upcomingEvents.toString(), grow: 'Next', desc: `Baki Aktiviti Perlu Dilaksana`, color: 'from-purple-600 to-purple-800' },
     ];
-  }, [pbdData, headcountData]);
+  }, [takwimEvents]);
 
   return (
     <div className="min-h-screen pb-20 p-4 md:p-8 max-w-[1600px] mx-auto animate-fade-in">
@@ -101,43 +76,85 @@ const App: React.FC = () => {
       
       <main className="space-y-12">
         <section>
-           <QuickAccess />
-        </section>
-
-        {/* Real-Time Academic Pulse */}
-        <section className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-           <StatCards stats={globalStats} />
-        </section>
-
-        <section className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-           <ActivityGallery 
-             folderImages={folderImages} 
-             loading={loading} 
-             onRefresh={loadData} 
+           <QuickAccess 
+              onNavigate={(view) => setCurrentView(view)} 
+              currentView={currentView}
            />
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch border-b border-slate-100 pb-12">
-          <div className="lg:col-span-8 flex flex-col">
-            <AIInsights events={takwimEvents} pbdData={pbdData} loading={loading} />
-          </div>
-          <div className="lg:col-span-4 flex flex-col">
-            <Announcements events={takwimEvents} pbdData={pbdData} loading={loading} />
-          </div>
-        </section>
+        {currentView === 'dashboard' ? (
+          <>
+            <section className="animate-fade-in" style={{ animationDelay: '0.05s' }}>
+               <Mukadimah />
+            </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          <div className="lg:col-span-8 flex flex-col">
-            <TakwimCard events={takwimEvents} loading={loading} />
-          </div>
-          <div className="lg:col-span-4 flex flex-col">
-            <PPPMTeras />
-          </div>
-        </section>
+            <section className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+               <StatCards stats={globalStats} />
+            </section>
 
-        <section className="w-full">
-          <ProgramsTable programs={programs} loading={loading} />
-        </section>
+            <section className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+               <ActivityGallery 
+                 folderImages={folderImages} 
+                 loading={loading} 
+                 onRefresh={loadData} 
+               />
+            </section>
+
+            <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch border-b border-slate-100 pb-12">
+              <div className="lg:col-span-8 flex flex-col">
+                <AIInsights events={takwimEvents} loading={loading} />
+              </div>
+              <div className="lg:col-span-4 flex flex-col">
+                <Announcements events={takwimEvents} loading={loading} />
+              </div>
+            </section>
+
+            <section id="takwim-seksyen" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+              <div className="lg:col-span-8 flex flex-col">
+                <TakwimCard events={takwimEvents} loading={loading} />
+              </div>
+              <div className="lg:col-span-4 flex flex-col">
+                <PPPMTeras />
+              </div>
+            </section>
+
+            <section className="w-full">
+              <ProgramsTable programs={programs} loading={loading} />
+            </section>
+          </>
+        ) : currentView === 'takwim' ? (
+          <section className="w-full">
+            <TakwimPage 
+              events={takwimEvents} 
+              loading={loading} 
+              onBack={() => setCurrentView('dashboard')} 
+            />
+          </section>
+        ) : currentView === 'carta' ? (
+          <section className="w-full">
+            <CartaOrganisasi onBack={() => setCurrentView('dashboard')} />
+          </section>
+        ) : currentView === 'panitia' ? (
+          <section className="w-full">
+            <PanitiaPage onBack={() => setCurrentView('dashboard')} />
+          </section>
+        ) : currentView === 'buku' ? (
+          <section className="w-full">
+            <BukuPengurusan onBack={() => setCurrentView('dashboard')} />
+          </section>
+        ) : currentView === 'guru' ? (
+          <section className="w-full">
+            <SenaraiGuru 
+              teachers={teachers} 
+              loading={loading} 
+              onBack={() => setCurrentView('dashboard')} 
+            />
+          </section>
+        ) : (
+          <section className="w-full">
+            <EOPRKurikulum onBack={() => setCurrentView('dashboard')} />
+          </section>
+        )}
 
         <section className="w-full pt-8 border-t border-slate-100">
            <TeacherPortals />

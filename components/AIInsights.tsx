@@ -1,16 +1,15 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { generateScheduleSummary } from '../services/geminiService';
-import { TakwimEvent, PBDRecord } from '../types';
+import { TakwimEvent } from '../types';
 import { ICONS } from '../constants';
 
 interface AIInsightsProps {
   events: TakwimEvent[];
-  pbdData: PBDRecord[];
   loading: boolean;
 }
 
-const AIInsights: React.FC<AIInsightsProps> = ({ events, pbdData, loading }) => {
+const AIInsights: React.FC<AIInsightsProps> = ({ events, loading }) => {
   const [insight, setInsight] = useState<string>('');
   const [displayedText, setDisplayedText] = useState<string>('');
   const [fetching, setFetching] = useState(false);
@@ -21,10 +20,10 @@ const AIInsights: React.FC<AIInsightsProps> = ({ events, pbdData, loading }) => 
     setFetching(true);
     setActiveQuery(type);
     setDisplayedText('');
-    const result = await generateScheduleSummary(events, pbdData, type);
+    const result = await generateScheduleSummary(events, type);
     setInsight(result.trim());
     setFetching(false);
-  }, [events, pbdData]);
+  }, [events]);
 
   useEffect(() => {
     if (!fetching && insight) {
@@ -48,15 +47,15 @@ const AIInsights: React.FC<AIInsightsProps> = ({ events, pbdData, loading }) => 
   }, [insight, fetching]);
 
   useEffect(() => {
-    if (!loading && (events.length > 0 || pbdData.length > 0) && !insight) {
+    if (!loading && events.length > 0 && !insight) {
       getAIResponse();
     }
-  }, [events, pbdData, loading, insight, getAIResponse]);
+  }, [events, loading, insight, getAIResponse]);
 
   const chips = [
-    { id: 'general', label: 'Analisis Akademik', icon: '📈' },
-    { id: 'busy', label: 'Status Takwim', icon: '📅' },
-    { id: 'focus', label: 'Strategi Intervensi', icon: '🎯' },
+    { id: 'general', label: 'Analisis Perancangan', icon: '📈' },
+    { id: 'busy', label: 'Kepadatan Takwim', icon: '📅' },
+    { id: 'focus', label: 'Hala Tuju Unit', icon: '🎯' },
   ];
 
   return (
@@ -73,7 +72,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ events, pbdData, loading }) => 
               <h2 className="text-xl font-bold tracking-tight">Wawasan EduSKPT AI</h2>
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
-                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-blue-300">Menterjemah Data File Anda</span>
+                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest text-blue-300">Sintesis Takwim Digital</span>
               </div>
             </div>
           </div>

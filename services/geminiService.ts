@@ -1,46 +1,32 @@
 
 import { GoogleGenAI } from "@google/genai";
-import { TakwimEvent, PBDRecord } from "../types";
+import { TakwimEvent } from "../types";
 
-// Memberitahu TypeScript bahawa process disediakan oleh persekitaran build
-declare var process: {
-  env: {
-    API_KEY: string;
-  };
-};
+// Removed declare var process to follow guidelines and use process.env directly.
 
 export async function generateScheduleSummary(
   events: TakwimEvent[], 
-  pbdData: PBDRecord[] = [], 
   queryType: string = 'general'
 ): Promise<string> {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
-  // Analisis statistik kritikal untuk AI
-  const total = pbdData.reduce((a, b) => a + (b.tp1+b.tp2+b.tp3+b.tp4+b.tp5+b.tp6), 0);
-  const mtm = pbdData.reduce((a, b) => a + (b.tp3+b.tp4+b.tp5+b.tp6), 0);
-  const mtmPct = total > 0 ? ((mtm/total)*100).toFixed(1) : "0";
-  
-  const subjectsCemerlang = pbdData
-    .filter(d => ((d.tp5+d.tp6)/(d.tp1+d.tp2+d.tp3+d.tp4+d.tp5+d.tp6)) > 0.4)
-    .slice(0, 2)
-    .map(d => `${d.subjek} (${d.kelas})`);
+  const upcomingCount = events.filter(e => e.date >= new Date()).length;
+  const unitSummary = Array.from(new Set(events.map(e => e.unit))).slice(0, 3).join(', ');
 
   const prompt = `
-    Anda adalah Cgu Din, AI Mastermind Unit Kurikulum SK Pekan Tenom.
-    Data Prestasi Terkini:
-    - Kadar MTM: ${mtmPct}%
-    - Subjek Dengan Kualiti Tinggi: ${subjectsCemerlang.join(', ') || 'Sedang diproses'}
+    Anda adalah Edu_SKPTen AI, Mastermind Pengurusan Takwim Unit Kurikulum SK Pekan Tenom.
+    Data Semasa:
+    - Jumlah Aktiviti Terdekat: ${upcomingCount}
+    - Unit Terlibat: ${unitSummary}
     
-    Tugas: Berikan "Executive Insight" dalam 35 patah perkataan yang memotivasikan guru.
-    Nada: Berwibawa, Membina, Profesional. Fokus kepada "Kemenjadian Murid" dan "Kualiti Instruksional".
+    Tugas: Berikan "Executive Insight" dalam 30 patah perkataan tentang keberkesanan perancangan takwim sekolah.
+    Nada: Profesional, Membina, Memberi Inspirasi. Fokus kepada pengurusan masa dan kualiti program.
     
-    PERATURAN KRITIKAL:
-    1. JANGAN sebut atau reka bilangan intervensi atau murid belum capai TP3.
-    2. JANGAN guna data yang tidak ada dalam parameter di atas.
-    3. Fokus hanya kepada pencapaian MTM dan Kualiti TP5/TP6.
-    4. JANGAN gunakan senarai. 
-    5. JANGAN gunakan bahasa inggeris kecuali teknikal (MTM, PBD).
+    PERATURAN:
+    1. JANGAN reka angka akademik (TP/Lulus).
+    2. JANGAN guna data yang tidak ada.
+    3. JANGAN gunakan senarai. 
+    4. Bahasa Melayu sepenuhnya.
   `;
 
   try {
@@ -48,9 +34,9 @@ export async function generateScheduleSummary(
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
-    return (response.text || "Sistem sedang mensintesis data prestasi kurikulum...").trim();
+    return (response.text || "Sistem sedang menganalisis takwim kurikulum...").trim();
   } catch (error) {
-    return "Analisis Kurikulum SKPTen sedang dikemaskini oleh Cgu Din AI.";
+    return "Analisis Takwim SKPTen sedang dikemaskini.";
   }
 }
 
@@ -58,14 +44,13 @@ export async function chatConsultant(message: string, history: {role: 'user' | '
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const systemInstruction = `
-    Anda adalah Edu_SKPTen AI - Personal Cgu Din Core Intelligence. 
-    Misi: Membantu guru menterjemah data kepada tindakan penambahbaikan instruksional.
-    Nada: Profesional, berfokuskan solusi, dan sentiasa merujuk data MTM (TP3-TP6).
+    Anda adalah Edu_SKPTen AI - Pakar Pengurusan Kurikulum Sekolah.
+    Misi: Membantu guru dalam pengurusan takwim, dokumen panitia, dan strategi pengajaran.
+    Nada: Profesional, berfokuskan solusi, dan mesra guru.
     
     LARANGAN:
-    - JANGAN beri maklumat intervensi atau bilangan murid gagal yang tidak sahih.
-    - Jika ditanya tentang intervensi, jawab dengan fokus kepada "pengukuhan instruksional" dan "pdpc berkualiti".
-    - JANGAN reka angka. Rujuk hanya data MTM and Kualiti TP5/6.
+    - JANGAN beri data gred murid yang tidak wujud.
+    - Fokus kepada sokongan teknikal kurikulum (Takwim, Dokumen, Program).
   `;
 
   try {
@@ -77,6 +62,6 @@ export async function chatConsultant(message: string, history: {role: 'user' | '
     const response = await chat.sendMessage({ message });
     return response.text || "Mohon pencerahan lanjut tentang kueri kurikulum anda.";
   } catch (error) {
-    return "Sistem AI SKPTEN sedang diselenggara. Sila cuba sebentar lagi.";
+    return "Sistem AI SKPTEN sedang diselenggara.";
   }
 }

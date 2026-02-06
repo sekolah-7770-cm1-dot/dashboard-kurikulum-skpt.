@@ -1,5 +1,5 @@
 
-import { TakwimEvent, ProgramActivity, PBDRecord, HeadcountRecord } from '../types';
+import { TakwimEvent, ProgramActivity, PBDRecord, HeadcountRecord, TeacherRecord } from '../types';
 
 function parseCsvLine(line: string): string[] {
   const values = [];
@@ -31,9 +31,68 @@ function extractDriveId(text: string): string | null {
   return idMatch ? idMatch[1] : null;
 }
 
+const getFreshUrl = (url: string) => `${url}${url.includes('?') ? '&' : '?'}t=${new Date().getTime()}`;
+
+export async function fetchTeachers(url: string): Promise<TeacherRecord[]> {
+  try {
+    const response = await fetch(getFreshUrl(url));
+    if (!response.ok) return [];
+    const text = await response.text();
+    const lines = text.trim().split(/\r\n|\n/);
+    if (lines.length < 1) return [];
+
+    // Cari baris tajuk (header row) secara dinamik
+    let headerIdx = -1;
+    let indices = { nama: -1, gred: -1, jawatan: -1, opsyen: -1 };
+
+    // Imbas 20 baris pertama untuk cari header
+    for (let i = 0; i < Math.min(lines.length, 20); i++) {
+      const h = parseCsvLine(lines[i]).map(v => v.toUpperCase().trim());
+      const nIdx = h.findIndex(v => v.includes('NAMA'));
+      if (nIdx !== -1) {
+        headerIdx = i;
+        indices = {
+          nama: nIdx,
+          gred: h.findIndex(v => v.includes('GRED')),
+          jawatan: h.findIndex(v => v.includes('JAWATAN')),
+          opsyen: h.findIndex(v => v.includes('OPSYEN') || v.includes('BIDANG') || v.includes('SUBJEK'))
+        };
+        break;
+      }
+    }
+
+    if (headerIdx === -1) {
+      console.warn("Header 'NAMA' tidak dijumpai dalam CSV Guru.");
+      return [];
+    }
+
+    const teachers: TeacherRecord[] = [];
+    for (let i = headerIdx + 1; i < lines.length; i++) {
+      const values = parseCsvLine(lines[i]);
+      if (values.length <= indices.nama) continue;
+      
+      const nama = (values[indices.nama] || "").trim();
+      
+      // Pastikan nama tidak kosong dan bukan nombor turutan (seperti NO. 1, 2, 3)
+      if (nama && nama !== "NAMA" && isNaN(Number(nama))) {
+        teachers.push({
+          nama: nama,
+          gred: indices.gred !== -1 ? (values[indices.gred] || "N/A") : "N/A",
+          jawatan: indices.jawatan !== -1 ? (values[indices.jawatan] || "Guru") : "Guru",
+          opsyen: indices.opsyen !== -1 ? (values[indices.opsyen] || "Am") : "Am",
+        });
+      }
+    }
+    return teachers;
+  } catch (e) {
+    console.error("Gagal memproses data guru:", e);
+    return [];
+  }
+}
+
 export async function fetchFolderImages(url: string): Promise<{url: string, name: string, dateStr?: string}[]> {
   try {
-    const response = await fetch(`${url}&t=${new Date().getTime()}`); 
+    const response = await fetch(getFreshUrl(url)); 
     if (!response.ok) return [];
     
     const text = await response.text();
@@ -60,33 +119,9 @@ export async function fetchFolderImages(url: string): Promise<{url: string, name
   }
 }
 
-function parseFlexibleDate(dateStr: string, currentYear: number): Date | null {
-  if (!dateStr) return null;
-  const cleanStr = dateStr.trim().replace(/[^\x20-\x7E]/g, '').toLowerCase();
-  const separators = ['/', '-', '.'];
-  let separator = null;
-  for (const s of separators) {
-    if (cleanStr.includes(s)) { separator = s; break; }
-  }
-  if (separator) {
-    const parts = cleanStr.split(separator);
-    if (parts.length >= 2) {
-      let m = parseInt(parts[0], 10);
-      let d = parseInt(parts[1], 10);
-      let y = parts.length === 3 ? parseInt(parts[2], 10) : currentYear;
-      if (!isNaN(m) && !isNaN(d)) {
-        if (!isNaN(y) && y < 100) y += 2000;
-        const date = new Date(y, m - 1, d);
-        return isNaN(date.getTime()) ? null : date;
-      }
-    }
-  }
-  return null;
-}
-
 export async function fetchTakwim(url: string): Promise<TakwimEvent[]> {
   try {
-    const response = await fetch(url);
+    const response = await fetch(getFreshUrl(url));
     const text = await response.text();
     const lines = text.trim().split(/\r\n|\n/);
     let headerFound = false;
@@ -123,9 +158,35 @@ export async function fetchTakwim(url: string): Promise<TakwimEvent[]> {
   } catch (e) { return []; }
 }
 
+function parseFlexibleDate(dateStr: string, currentYear: number): Date | null {
+  if (!dateStr) return null;
+  const cleanStr = dateStr.trim().replace(/[^\x20-\x7E]/g, '').toLowerCase();
+  const separators = ['/', '-', '.'];
+  let separator = null;
+  for (const s of separators) {
+    if (cleanStr.includes(s)) { separator = s; break; }
+  }
+  
+  if (separator) {
+    const parts = cleanStr.split(separator);
+    if (parts.length >= 2) {
+      let m = parseInt(parts[0], 10);
+      let d = parseInt(parts[1], 10);
+      let y = parts.length === 3 ? parseInt(parts[2], 10) : currentYear;
+      
+      if (!isNaN(m) && !isNaN(d)) {
+        if (!isNaN(y) && y < 100) y += 2000;
+        const date = new Date(y, m - 1, d);
+        return isNaN(date.getTime()) ? null : date;
+      }
+    }
+  }
+  return null;
+}
+
 export async function fetchPrograms(url: string): Promise<ProgramActivity[]> {
   try {
-    const response = await fetch(url);
+    const response = await fetch(getFreshUrl(url));
     const text = await response.text();
     const lines = text.trim().split(/\r\n|\n/);
     let headerIdx = -1;
@@ -166,14 +227,13 @@ export async function fetchPrograms(url: string): Promise<ProgramActivity[]> {
 
 export async function fetchPBD(url: string): Promise<PBDRecord[]> {
   try {
-    const response = await fetch(url);
+    const response = await fetch(getFreshUrl(url));
     const text = await response.text();
     const lines = text.trim().split(/\r\n|\n/);
     
     const records: PBDRecord[] = [];
     for (let i = 0; i < lines.length; i++) {
       const values = parseCsvLine(lines[i]);
-      // Pastikan baris mempunyai data subjek dan nombor-nombor TP
       if (values.length >= 8 && values[0] && !values[0].toUpperCase().includes('SUBJEK')) {
         const tp1 = parseInt(values[2]) || 0;
         const tp2 = parseInt(values[3]) || 0;
@@ -182,7 +242,6 @@ export async function fetchPBD(url: string): Promise<PBDRecord[]> {
         const tp5 = parseInt(values[6]) || 0;
         const tp6 = parseInt(values[7]) || 0;
         
-        // Hanya masukkan rekod jika ada sekurang-kurangnya 1 TP yang diisi
         if (tp1 + tp2 + tp3 + tp4 + tp5 + tp6 > 0) {
           records.push({
             subjek: values[0],
@@ -199,7 +258,7 @@ export async function fetchPBD(url: string): Promise<PBDRecord[]> {
 
 export async function fetchHeadcount(url: string): Promise<HeadcountRecord[]> {
   try {
-    const response = await fetch(url);
+    const response = await fetch(getFreshUrl(url));
     const text = await response.text();
     const lines = text.trim().split(/\r\n|\n/);
     

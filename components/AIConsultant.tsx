@@ -42,7 +42,7 @@ const AIConsultant: React.FC = () => {
   };
 
   const quickPrompts = [
-    "SOP Kurikulum SKPT",
+    "SOP Kurikulum SKPTEN",
     "Integrasi PBD & AI",
     "Panduan eRPH Digital",
     "Analisis Data Murid"

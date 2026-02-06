@@ -11,7 +11,15 @@ export interface ProgramActivity {
   bidang: string;
   unit: string;
   program: string;
-  imageUrls: string[]; // Diubah dari string tunggal ke array
+  imageUrls: string[]; 
+}
+
+export interface TeacherRecord {
+  nama: string;
+  gred: string;
+  jawatan: string;
+  opsyen: string;
+  email?: string;
 }
 
 export interface PanitiaStatus {
@@ -34,7 +42,9 @@ export interface PBDRecord {
 
 export interface HeadcountRecord {
   subjek: string;
-  tov: number; // Take Off Value
-  etr: number; // Expected Targeted Result
-  ar: number;  // Actual Result
+  tov: number;
+  etr: number;
+  ar: number;
 }
+
+export type DashboardView = 'dashboard' | 'carta' | 'eopr' | 'panitia' | 'takwim' | 'buku' | 'guru';

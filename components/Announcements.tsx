@@ -1,36 +1,19 @@
 
 import React, { useMemo } from 'react';
-import { TakwimEvent, PBDRecord } from '../types';
+import { TakwimEvent } from '../types';
 
 interface AnnouncementsProps {
   events: TakwimEvent[];
-  pbdData: PBDRecord[];
   loading: boolean;
 }
 
-const Announcements: React.FC<AnnouncementsProps> = ({ events, pbdData, loading }) => {
+const Announcements: React.FC<AnnouncementsProps> = ({ events, loading }) => {
   const notices = useMemo(() => {
     const combinedNotices = [];
 
-    // 1. Analisis Prestasi Kualiti (Data Sahih TP5/TP6)
-    const highPerformers = pbdData.filter(d => {
-      const total = d.tp1+d.tp2+d.tp3+d.tp4+d.tp5+d.tp6;
-      return total > 0 && (d.tp5 + d.tp6) > (total * 0.3);
-    });
-    
-    highPerformers.slice(0, 3).forEach(sub => {
-      combinedNotices.push({
-        tag: "KUALITI",
-        icon: "🏆",
-        color: "bg-emerald-600",
-        msg: `Pencapaian Kualiti (TP5/TP6) memberangsangkan bagi ${sub.subjek} (${sub.kelas}).`,
-        date: "Prestasi"
-      });
-    });
-
-    // 2. Makluman Takwim
+    // 1. Makluman Takwim Terdekat
     const now = new Date();
-    const upcoming = events.filter(e => e.date >= now).slice(0, 3);
+    const upcoming = events.filter(e => e.date >= now).slice(0, 5);
     upcoming.forEach(e => {
       combinedNotices.push({
         tag: "TAKWIM",
@@ -41,8 +24,8 @@ const Announcements: React.FC<AnnouncementsProps> = ({ events, pbdData, loading 
       });
     });
 
-    return combinedNotices.slice(0, 6);
-  }, [events, pbdData]);
+    return combinedNotices;
+  }, [events]);
 
   if (loading) return <div className="p-10 text-center text-slate-400">Menyusun Hebahan...</div>;
 
@@ -50,8 +33,8 @@ const Announcements: React.FC<AnnouncementsProps> = ({ events, pbdData, loading 
     <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div className="flex flex-col">
-          <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Wawasan & Hebahan</h3>
-          <span className="text-[8px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Automasi Data SKPT</span>
+          <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Hebahan</h3>
+          <span className="text-[8px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Automasi Takwim Unit Kurikulum Sek. Keb. Pekan, Tenom</span>
         </div>
         <div className="p-2 bg-indigo-50 rounded-xl">
            <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

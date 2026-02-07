@@ -6,6 +6,7 @@ export const TAKWIM_CSV_URL = "https://docs.google.com/spreadsheets/d/1MCP1TflZ0
 export const PROGRAMS_CSV_URL = "https://docs.google.com/spreadsheets/d/1Jz4buGFkc_pKUgcQcpYWPkWJBeawQaAda1t5_hbRUbs/export?format=csv";
 export const FOLDER_IMAGES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQLmCnHBO1eDDhUsl9QdFk2T95HH3E4aX9ugSUcpMqdebnQI2EOC-f4WxYGF0laK_38EEO3a2K_bnVX/pub?gid=319532007&single=true&output=csv"; 
 export const TEACHERS_CSV_URL = "https://docs.google.com/spreadsheets/d/1-bczu9tjow4KSZJ_h9izRiu_gkL4B4lG/export?format=csv";
+export const PBD_2025_CSV_URL = "https://docs.google.com/spreadsheets/d/1ax6YF2audXxBFOx_3TPbcugvsZ8nqyNC/export?format=csv";
 
 export const MONTH_NAMES = [
   "Januari", "Februari", "Mac", "April", "Mei", "Jun",

@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { TakwimEvent, ProgramActivity, DashboardView, TeacherRecord } from './types';
-import { fetchTakwim, fetchPrograms, fetchFolderImages, fetchTeachers } from './services/csvService';
-import { TAKWIM_CSV_URL, PROGRAMS_CSV_URL, FOLDER_IMAGES_CSV_URL, TEACHERS_CSV_URL } from './constants';
+import { TakwimEvent, ProgramActivity, DashboardView, TeacherRecord, PBDRecord } from './types';
+import { fetchTakwim, fetchPrograms, fetchFolderImages, fetchTeachers, fetchPBD } from './services/csvService';
+import { TAKWIM_CSV_URL, PROGRAMS_CSV_URL, FOLDER_IMAGES_CSV_URL, TEACHERS_CSV_URL, PBD_2025_CSV_URL } from './constants';
 import DashboardHeader from './components/DashboardHeader';
 import QuickAccess from './components/QuickAccess';
 import TakwimCard from './components/TakwimCard';
@@ -21,29 +21,33 @@ import TakwimPage from './components/TakwimPage';
 import BukuPengurusan from './components/BukuPengurusan';
 import SenaraiGuru from './components/SenaraiGuru';
 import Mukadimah from './components/Mukadimah';
+import PBD2025Page from './components/PBD2025Page';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<DashboardView>('dashboard');
   const [takwimEvents, setTakwimEvents] = useState<TakwimEvent[]>([]);
   const [programs, setPrograms] = useState<ProgramActivity[]>([]);
   const [teachers, setTeachers] = useState<TeacherRecord[]>([]);
+  const [pbd2025Data, setPbd2025Data] = useState<PBDRecord[]>([]);
   const [folderImages, setFolderImages] = useState<{url: string, name: string, dateStr?: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [takwimData, programsData, imagesData, teachersData] = await Promise.all([
+      const [takwimData, programsData, imagesData, teachersData, pbdData] = await Promise.all([
         fetchTakwim(TAKWIM_CSV_URL),
         fetchPrograms(PROGRAMS_CSV_URL),
         fetchFolderImages(FOLDER_IMAGES_CSV_URL),
-        fetchTeachers(TEACHERS_CSV_URL)
+        fetchTeachers(TEACHERS_CSV_URL),
+        fetchPBD(PBD_2025_CSV_URL)
       ]);
 
       setTakwimEvents(takwimData);
       setPrograms(programsData);
       setFolderImages(imagesData);
       setTeachers(teachersData);
+      setPbd2025Data(pbdData);
       setLoading(false);
     } catch (error) {
       console.error("Data load failed:", error);
@@ -122,6 +126,14 @@ const App: React.FC = () => {
               <ProgramsTable programs={programs} loading={loading} />
             </section>
           </>
+        ) : currentView === 'pbd2025' ? (
+          <section className="w-full">
+            <PBD2025Page 
+              data={pbd2025Data}
+              loading={loading}
+              onBack={() => setCurrentView('dashboard')}
+            />
+          </section>
         ) : currentView === 'takwim' ? (
           <section className="w-full">
             <TakwimPage 

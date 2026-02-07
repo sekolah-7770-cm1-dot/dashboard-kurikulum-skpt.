@@ -47,4 +47,4 @@ export interface HeadcountRecord {
   ar: number;
 }
 
-export type DashboardView = 'dashboard' | 'carta' | 'eopr' | 'panitia' | 'takwim' | 'buku' | 'guru';
+export type DashboardView = 'dashboard' | 'carta' | 'eopr' | 'panitia' | 'takwim' | 'buku' | 'guru' | 'pbd2025';

@@ -10,8 +10,8 @@ interface QuickAccessProps {
 
 const tiles = [
   { id: 'dashboard', label: 'Dashboard Utama', icon: ICONS.Dashboard, color: 'bg-blue-600', href: '#' },
+  { id: 'pbd2025', label: 'Analisis PBD 2025', icon: ICONS.Chart, color: 'bg-emerald-600', href: '#pbd2025' },
   { id: 'takwim', label: 'Takwim Tahunan', icon: ICONS.Calendar, color: 'bg-indigo-600', href: '#takwim' },
-  { id: 'carta', label: 'Carta Organisasi', icon: ICONS.Trend, color: 'bg-rose-500', href: '#carta' },
   { id: 'panitia', label: 'Direktori Panitia', icon: ICONS.Users, color: 'bg-amber-500', href: '#panitia' },
   { id: 'guru', label: 'Senarai Guru', icon: ICONS.Users, color: 'bg-emerald-600', href: '#guru' },
   { id: 'buku', label: 'Buku Pengurusan', icon: ICONS.Book, color: 'bg-violet-600', href: '#buku' },

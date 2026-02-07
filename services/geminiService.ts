@@ -16,7 +16,7 @@ export async function generateScheduleSummary(
   const monthName = now.toLocaleDateString('ms-MY', { month: 'long' });
 
   const prompt = `
-    Anda adalah Edu_SKPTen AI, Mastermind Pengurusan Kurikulum SK Pekan Tenom.
+    Anda adalah Edu_UNIKUR AI, Mastermind Pengurusan Kurikulum UNIKUR SK Pekan Tenom.
     
     KONTEKS DATA:
     - Bulan Semasa: ${monthName}
@@ -24,7 +24,7 @@ export async function generateScheduleSummary(
     - Unit Terlibat: ${unitSummary}
     
     TUGAS:
-    Berikan satu perenggan "Executive Insight" (maksimum 40 patah perkataan) tentang status pengurusan kurikulum sekolah.
+    Berikan satu perenggan "Executive Insight" (maksimum 40 patah perkataan) tentang status pengurusan UNIKUR SKPTEN.
     Gunakan Bahasa Melayu yang profesional dan memberi inspirasi.
   `;
 
@@ -33,9 +33,9 @@ export async function generateScheduleSummary(
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
-    return response.text || "Sistem sedia memproses data.";
+    return response.text || "Sistem UNIKUR sedia memproses data.";
   } catch (error) {
-    return "Analisis takwim akan tersedia semula sebentar lagi.";
+    return "Analisis takwim UNIKUR akan tersedia semula sebentar lagi.";
   }
 }
 
@@ -46,20 +46,17 @@ export async function generatePBDAnalysis(
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const prompt = `
-    Anda adalah Pakar Analisis Data Akademik SK Pekan Tenom (cikgu Din).
+    Anda adalah Pakar Analisis Data Akademik UNIKUR SK Pekan Tenom (cikgu Din).
     Analisis data PBD bagi subjek: ${subjek}
     
     DATA SEMASA:
     - Jumlah Murid: ${stats.total}
     - Peratus MTM (TP3-TP6): ${stats.mtm}%
     - Peratus Kualiti (TP5-TP6): ${stats.quality}%
-    - TP1: ${stats.tp1} murid, TP2: ${stats.tp2} murid
     
     TUGAS:
     Berikan ulasan eksekutif ringkas (maksimum 50 patah perkataan) dalam Bahasa Melayu. 
-    1. Nyatakan status pencapaian.
-    2. Berikan 1 cadangan strategi intervensi untuk murid TP1/TP2.
-    3. Gunakan nada yang memberi galakan kepada guru.
+    Gunakan nada yang memberi galakan kepada rakan pendidik UNIKUR.
   `;
 
   try {
@@ -67,9 +64,9 @@ export async function generatePBDAnalysis(
       model: 'gemini-3-flash-preview',
       contents: prompt,
     });
-    return response.text?.trim() || "Data sedang dianalisis oleh sistem.";
+    return response.text?.trim() || "Data sedang dianalisis oleh ekosistem UNIKUR.";
   } catch (error) {
-    return `Bagi subjek ${subjek}, fokus perlu diberikan kepada murid TP1 & TP2 melalui bimbingan berfokus untuk meningkatkan MTM melepasi sasaran sekolah.`;
+    return `Bagi subjek ${subjek}, fokus UNIKUR perlu diberikan kepada bimbingan berfokus untuk meningkatkan MTM melepasi sasaran sekolah.`;
   }
 }
 
@@ -77,9 +74,9 @@ export async function chatConsultant(message: string, history: {role: 'user' | '
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const systemInstruction = `
-    Anda adalah Edu_SKPTen AI - Pakar Pengurusan Kurikulum Sekolah Kebangsaan Pekan Tenom.
+    Anda adalah Edu_UNIKUR AI - Pakar Pengurusan Kurikulum UNIKUR SK Pekan Tenom.
     Nada: Profesional, berfokuskan solusi, dan mesra guru.
-    Misi: Membantu guru dalam pengurusan takwim, dokumentasi panitia, dan strategi PdP.
+    Misi: Membantu guru dalam pengurusan UNIKUR, takwim, dokumentasi panitia, dan strategi PdP.
   `;
 
   try {
@@ -89,8 +86,8 @@ export async function chatConsultant(message: string, history: {role: 'user' | '
       history: history,
     });
     const response = await chat.sendMessage({ message });
-    return response.text || "Mohon pencerahan lanjut tentang kueri kurikulum anda.";
+    return response.text || "Mohon pencerahan lanjut tentang kueri UNIKUR anda.";
   } catch (error) {
-    return "Sistem Konsultasi AI sedang dikemas kini.";
+    return "Sistem Konsultasi UNIKUR AI sedang dikemas kini.";
   }
 }

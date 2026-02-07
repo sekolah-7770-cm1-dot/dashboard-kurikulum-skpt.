@@ -9,7 +9,6 @@ interface PBD2025PageProps {
   onBack: () => void;
 }
 
-// Konfigurasi tema warna dan background unik bagi setiap subjek
 const CORE_SUBJECTS = [
   { 
     id: 'BM', 
@@ -225,7 +224,7 @@ const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
         </div>
       </div>
 
-      {/* Hero Header PBD Section */}
+      {/* Hero Header PBD Section - RAPAT & PANJANG */}
       <div className="relative overflow-hidden bg-slate-900 rounded-[3.5rem] p-8 md:p-14 text-white shadow-2xl border border-white/5">
          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full -mr-20 -mt-20"></div>
          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full -ml-20 -mb-20"></div>
@@ -236,101 +235,27 @@ const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
                 Pentaksiran Bilik Darjah (PBD)
               </span>
               <div className="h-px w-12 bg-slate-700"></div>
-              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Transformasi 2026-2035</span>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">UNIT KURIKULUM DIGITAL CORE</span>
             </div>
             
-            <h1 className="text-3xl md:text-6xl font-black text-white leading-none mb-6 tracking-tighter uppercase">
-              ANALISIS PRESTASI <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">AKADEMIK</span>
+            <h1 className="text-3xl md:text-6xl font-black text-white leading-none mb-6 tracking-tight uppercase">
+              ANALISIS PRESTASI <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-tight">AKADEMIK</span>
             </h1>
             
-            <div className="max-w-4xl space-y-4">
-               <p className="text-slate-300 text-sm md:text-lg font-medium leading-relaxed opacity-90">
-                 Memacu kemenjadian murid melalui pentaksiran autentik yang holistik, selaras dengan <span className="text-white font-bold italic">Rancangan Pendidikan Malaysia 2026-2035</span>. 
-                 Sistem ini menyediakan wawasan digital bagi memastikan Misi KPM dalam membangunkan potensi individu sepenuhnya tercapai melalui pemantauan Tahap Penguasaan (TP) yang telus dan berasaskan data.
+            <div className="max-w-4xl space-y-2">
+               <p className="text-slate-300 text-sm md:text-lg font-medium leading-tight opacity-90">
+                 Membangun potensi insan melalui kepimpinan instruksional yang berimpak tinggi, berintegriti, dan berteraskan data raya. 
+                 Kita tekad menerajui transformasi pendidikan digital secara bersepadu menerusi ekosistem UNIT KURIKULUM Digital Core selaras dengan <span className="text-white font-bold italic">Aspirasi KPM 2026-2035</span>.
                </p>
-               <div className="flex items-center gap-4 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest italic pt-2">
+               <div className="flex items-center gap-4 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest italic pt-1">
                  <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                  </svg>
-                 #KemenjadianMurid #PendidikanBersepadu #AspirasiKPM
+                 #UNIKURSKPTEN #INSPIRASICEMERLANG
                </div>
             </div>
          </div>
          <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600 w-full opacity-30"></div>
-      </div>
-
-      {/* Subject Quick Access Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4">
-        {topSummaries.map(s => {
-          const isActive = isSubjectMatch(selectedSubjek, s.id);
-          return (
-            <button 
-              key={s.id} 
-              onClick={() => setSelectedSubjek(s.id)}
-              className={`p-6 rounded-[2.5rem] flex flex-col items-start transition-all duration-500 active:scale-95 text-left w-full group overflow-hidden relative border ${
-                isActive 
-                ? `${s.activeBg} ${s.activeText} ${s.ring} border-white/20 shadow-2xl` 
-                : `${s.inactiveBg} ${s.inactiveText} border-slate-100 shadow-sm hover:border-slate-300`
-              }`}
-            >
-              <div className="flex items-center gap-3 mb-5 relative z-10">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-all ${isActive ? 'bg-white/20' : 'bg-white shadow-sm'}`}>
-                   {s.icon}
-                </div>
-                <h4 className={`text-[11px] font-black uppercase tracking-tight ${isActive ? 'text-white' : s.accentText}`}>
-                  {s.name}
-                </h4>
-              </div>
-              
-              <div className="mb-6 relative z-10">
-                <p className={`text-[9px] font-black uppercase tracking-[0.2em] mb-1 ${isActive ? 'text-white/60' : 'text-slate-400'}`}>MASTERY</p>
-                <div className="flex items-center gap-2.5">
-                  <span className={`text-4xl font-black tracking-tighter ${isActive ? 'text-white' : 'text-slate-900'}`}>{s.pct.toFixed(1)}%</span>
-                  <div className={`w-3 h-3 rounded-full border-2 ${isActive ? 'border-white' : 'border-slate-100'} ${s.statusColor}`}></div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 w-full mt-auto relative z-10">
-                 {[
-                   { label: 'TP1', val: s.tp1, color: isActive ? 'text-white/90' : 'text-slate-400' },
-                   { label: 'TP2', val: s.tp2, color: isActive ? 'text-white/90' : 'text-slate-500' },
-                   { label: 'TP3', val: s.tp3, color: isActive ? 'text-white font-bold' : 'text-amber-500 font-black' },
-                   { label: 'TP4', val: s.tp4, color: isActive ? 'text-white font-bold' : 'text-emerald-500 font-black' },
-                   { label: 'TP5', val: s.tp5, color: isActive ? 'text-white font-bold' : 'text-blue-600 font-black' },
-                   { label: 'TP6', val: s.tp6, color: isActive ? 'text-white font-bold' : 'text-indigo-600 font-black' }
-                 ].map((tp, idx) => (
-                   <div key={idx} className={`p-2 rounded-xl border flex flex-col items-center transition-all ${isActive ? 'bg-white/10 border-white/10' : 'bg-white border-slate-50 shadow-sm'}`}>
-                      <span className={`text-[7px] font-black uppercase mb-0.5 ${isActive ? 'text-white/50' : 'text-slate-400'}`}>{tp.label}</span>
-                      <span className={`text-[10px] ${tp.color}`}>{tp.val}</span>
-                   </div>
-                 ))}
-              </div>
-
-              <div className={`absolute -bottom-10 -right-10 w-32 h-32 rounded-full blur-2xl opacity-10 transition-transform duration-700 group-hover:scale-150 ${isActive ? 'bg-white' : s.activeBg}`}></div>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Hero Visual Detail Fokus */}
-      <div className="bg-[#0f172a] rounded-[3.5rem] p-10 md:p-14 text-white relative overflow-hidden group shadow-2xl border border-white/5">
-         <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-600/10 via-transparent to-indigo-600/5 pointer-events-none"></div>
-         <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-            <div className="w-20 h-20 md:w-28 md:h-28 rounded-[2rem] bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-5xl shadow-2xl transition-transform group-hover:scale-105 duration-700">
-               {CORE_SUBJECTS.find(s => isSubjectMatch(selectedSubjek, s.id))?.icon || '📚'}
-            </div>
-            <div className="space-y-3 text-center md:text-left">
-               <div className="flex items-center justify-center md:justify-start gap-4">
-                  <span className="px-5 py-1.5 bg-blue-600 text-white text-[10px] font-black rounded-lg uppercase tracking-widest">Detail Fokus</span>
-                  <div className="h-px w-10 bg-slate-700"></div>
-                  <span className="text-slate-500 text-[11px] font-bold uppercase tracking-[0.2em]">Analisis {selectedKelas}</span>
-               </div>
-               <h1 className="text-3xl md:text-6xl font-black leading-none tracking-tighter uppercase">
-                  {CORE_SUBJECTS.find(s => isSubjectMatch(selectedSubjek, s.id))?.name || selectedSubjek}
-                  <span className="block text-xl md:text-2xl text-blue-400 mt-4 tracking-[0.25em] font-extrabold opacity-90">{selectedKelas}</span>
-               </h1>
-            </div>
-         </div>
       </div>
 
       {/* Analytics Visualization */}
@@ -338,15 +263,15 @@ const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
            <div className="text-center p-6 bg-slate-50/40 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl transition-all group">
               <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">MTM (TP3-6)</p>
-              <p className="text-4xl md:text-5xl font-black text-emerald-500 tracking-tighter">{stats.mtm}%</p>
+              <p className="text-4xl md:text-5xl font-black text-emerald-500 tracking-tight">{stats.mtm}%</p>
            </div>
            <div className="text-center p-6 bg-slate-50/40 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl transition-all group">
               <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">Kualiti (TP5-6)</p>
-              <p className="text-4xl md:text-5xl font-black text-blue-600 tracking-tighter">{stats.quality}%</p>
+              <p className="text-4xl md:text-5xl font-black text-blue-600 tracking-tight">{stats.quality}%</p>
            </div>
            <div className="text-center p-6 bg-slate-50/40 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl transition-all group">
               <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">Jml Murid</p>
-              <p className="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter">{stats.total}</p>
+              <p className="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">{stats.total}</p>
            </div>
         </div>
 
@@ -377,14 +302,13 @@ const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
            })}
         </div>
       </div>
-
-      {/* Taburan TP Mengikut Tahun */}
+      
+      {/* Rest of component stays the same */}
       <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-200 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-2xl">
          <div className="flex items-center gap-4 mb-10">
             <div className="w-1.5 h-8 bg-blue-600 rounded-full"></div>
             <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Taburan Tahap Penguasaan (TP) Mengikut Tahun</h3>
          </div>
-         
          <div className="overflow-x-auto">
             <table className="w-full text-left">
                <thead>
@@ -413,75 +337,6 @@ const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
                </tbody>
             </table>
          </div>
-      </div>
-
-      {/* AI Insights & Jadual Bestari vs Cemerlang */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-5 bg-[#0f172a] rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden">
-           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[60px] rounded-full"></div>
-           <div className="flex items-center gap-5 mb-10">
-              <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center border-4 border-blue-400 p-1 overflow-hidden shadow-2xl">
-                 <img src={teacherAvatar} alt="Cgu Din" className="w-full h-full object-contain scale-125 translate-y-2" />
-              </div>
-              <div>
-                 <h4 className="text-xs font-black text-blue-400 uppercase tracking-widest">cikgu Din AI</h4>
-                 <div className="flex items-center gap-2">
-                   <span className={`w-2 h-2 rounded-full animate-pulse ${isAnalysing ? 'bg-amber-400' : 'bg-emerald-400'}`}></span>
-                   <span className={`text-[10px] font-bold ${isAnalysing ? 'text-amber-400' : 'text-emerald-400'} uppercase tracking-widest`}>
-                      {isAnalysing ? 'Analisis...' : 'Aktif'}
-                   </span>
-                 </div>
-              </div>
-           </div>
-           <h3 className="text-2xl font-black uppercase tracking-tight text-blue-100 mb-6 flex items-center gap-3">
-             <span className="w-1.5 h-7 bg-blue-500 rounded-full"></span>
-             Ulasan Strategik
-           </h3>
-           <p className="text-[15px] font-medium leading-relaxed italic text-slate-300 flex-1">
-              "{aiInsight}"
-           </p>
-        </div>
-
-        <div className="lg:col-span-7 bg-white rounded-[3rem] p-10 border border-slate-200 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-2xl">
-           <div className="flex items-center gap-4 mb-10">
-              <div className="w-1.5 h-8 bg-blue-600 rounded-full"></div>
-              <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Bestari vs Cemerlang</h3>
-           </div>
-           <div className="overflow-x-auto">
-             <table className="w-full text-left">
-               <thead className="bg-slate-50/50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
-                 <tr>
-                   <th className="py-6 px-8">Tahun</th>
-                   <th className="py-6 px-8 text-center">Bestari (%)</th>
-                   <th className="py-6 px-8 text-center">Cemerlang (%)</th>
-                   <th className="py-6 px-8 text-center">Jurang</th>
-                 </tr>
-               </thead>
-               <tbody className="divide-y divide-slate-50">
-                 {classComparison.map((row, i) => {
-                   const diff = (parseFloat(row.bestari) - parseFloat(row.cemerlang)).toFixed(1);
-                   const isPositive = parseFloat(diff) >= 0;
-                   const isZero = parseFloat(diff) === 0;
-                   return (
-                     <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
-                       <td className="py-5 px-8 font-black text-slate-700 text-xs tracking-wider">{row.year}</td>
-                       <td className="py-5 px-8 text-center font-black text-blue-600 text-sm">{row.bestari}%</td>
-                       <td className="py-5 px-8 text-center font-black text-emerald-600 text-sm">{row.cemerlang}%</td>
-                       <td className="py-5 px-8 text-center">
-                          <span className={`text-[11px] font-black px-4 py-1.5 rounded-full shadow-sm ${
-                             isZero ? 'bg-emerald-50 text-emerald-600' :
-                             isPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-                          }`}>
-                            {isPositive && !isZero ? '+' : ''}{diff}%
-                          </span>
-                       </td>
-                     </tr>
-                   );
-                 })}
-               </tbody>
-             </table>
-           </div>
-        </div>
       </div>
     </div>
   );

@@ -26,18 +26,13 @@ const DashboardHeader: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  /**
-   * Menggunakan format lh3.googleusercontent.com/d/ID
-   */
   const fileId = "1ZTDcPpUpuUbbjp0ibxQoBOQIZjWWq89J";
   const googleDriveLogoUrl = `https://lh3.googleusercontent.com/d/${fileId}=s1000?authuser=0`;
 
   return (
     <header className="relative bg-[#0f172a] text-white p-8 md:p-10 rounded-[2rem] shadow-2xl mb-10 overflow-hidden border border-white/5 group">
-      {/* GLOBAL SHIMMER SCAN EFFECT - Menyapu keseluruhan HEADER dari hujung ke hujung */}
       <div className="global-shimmer-effect"></div>
 
-      {/* Background Overlays */}
       <div 
         className="absolute inset-0 opacity-[0.15] grayscale mix-blend-overlay pointer-events-none"
         style={{ 
@@ -69,7 +64,7 @@ const DashboardHeader: React.FC = () => {
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
               <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">Live System</span>
             </div>
-            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] border-l border-slate-800 pl-3">Digital 4.0 Core</span>
+            <span className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] border-l border-slate-800 pl-3">UNIT KURIKULUM Digital Core</span>
           </div>
           
           <div className="flex items-center gap-4 text-slate-400">
@@ -84,7 +79,6 @@ const DashboardHeader: React.FC = () => {
           
           <div className="relative flex items-start gap-6 py-2 px-1">
             <div className="relative">
-              {/* Logo Container */}
               <div className="relative flex items-center justify-center w-[115px] h-[106px] md:w-[132px] md:h-[122px] transition-all duration-700 transform translate-y-[5%] group-hover:translate-y-0 group-hover:scale-105">
                 {!imgError ? (
                   <img 
@@ -92,10 +86,7 @@ const DashboardHeader: React.FC = () => {
                     alt="Logo SK Pekan Tenom" 
                     crossOrigin="anonymous"
                     className="w-full h-full object-contain relative z-10 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] animate-logo-float"
-                    onError={() => {
-                      console.error("Gagal memuatkan logo.");
-                      setImgError(true);
-                    }}
+                    onError={() => setImgError(true)}
                   />
                 ) : (
                   <div className="relative z-10 flex flex-col items-center justify-center text-center bg-slate-900/40 backdrop-blur-xl p-4 rounded-3xl border border-white/10 animate-logo-float">
@@ -125,7 +116,7 @@ const DashboardHeader: React.FC = () => {
               
               <div className="mt-8 space-y-1">
                 <p className="text-slate-300 text-[10px] md:text-xs font-semibold tracking-[0.1em] uppercase">
-                  Pengurusan Digital & Tranformasi Pendidikan Unit Kurikulum
+                  Transformasi Pendidikan Digital UNIT KURIKULUM Digital Core
                 </p>
                 <p className="text-yellow-400 text-[10px] font-bold italic tracking-widest lowercase">
                   #inspirasicemerlang
@@ -137,13 +128,13 @@ const DashboardHeader: React.FC = () => {
           <div className="hidden lg:flex items-center gap-8 border-l border-white/10 pl-8 bg-black/20 backdrop-blur-md p-6 rounded-[2rem] border border-white/5 shadow-xl relative z-20">
             <div className="text-right">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Edisi</p>
-              <p className="text-xs font-bold text-blue-100">Transformasi 2026</p>
+              <p className="text-xs font-bold text-blue-100 uppercase">Unit Kurikulum 2026</p>
             </div>
             <div className="h-10 w-px bg-white/10"></div>
             <div className="text-right">
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Sistem</p>
               <div className="flex items-center justify-end gap-2">
-                <span className="text-xs font-bold text-emerald-400">Aktif</span>
+                <span className="text-xs font-black text-emerald-400">Aktif</span>
                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
               </div>
             </div>

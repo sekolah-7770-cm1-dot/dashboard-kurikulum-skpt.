@@ -67,9 +67,9 @@ const App: React.FC = () => {
     const upcomingEvents = takwimEvents.filter(e => e.date >= now).length;
 
     return [
-      { label: 'Aktiviti Tahunan', value: totalEvents.toLocaleString(), grow: 'Total', desc: 'Jumlah Program Terjadual 2026', color: 'from-slate-600 to-slate-800' },
-      { label: 'Aktiviti Bulan Ini', value: currentMonthEvents.toString(), grow: 'Semasa', desc: `Fokus Program Bulan Ini`, color: 'from-blue-600 to-blue-800' },
-      { label: 'Unit / Panitia', value: uniqueUnits.toString(), grow: 'Aktif', desc: `Unit Terlibat Dalam Takwim`, color: 'from-emerald-600 to-emerald-800' },
+      { label: 'Aktiviti Kurikulum', value: totalEvents.toLocaleString(), grow: 'Total', desc: 'Program Terjadual Unit Kurikulum 2026', color: 'from-slate-600 to-slate-800' },
+      { label: 'Fokus Bulan Ini', value: currentMonthEvents.toString(), grow: 'Semasa', desc: `Aktiviti Kurikulum Bulan Ini`, color: 'from-blue-600 to-blue-800' },
+      { label: 'Unit / Panitia', value: uniqueUnits.toString(), grow: 'Aktif', desc: `Unit Terlibat Dalam Kurikulum`, color: 'from-emerald-600 to-emerald-800' },
       { label: 'Program Mendatang', value: upcomingEvents.toString(), grow: 'Next', desc: `Baki Aktiviti Perlu Dilaksana`, color: 'from-purple-600 to-purple-800' },
     ];
   }, [takwimEvents]);
@@ -79,102 +79,46 @@ const App: React.FC = () => {
       <DashboardHeader />
       
       <main className="space-y-12">
+        {/* QuickAccess and other views... */}
         <section>
-           <QuickAccess 
-              onNavigate={(view) => setCurrentView(view)} 
-              currentView={currentView}
-           />
-           {currentView === 'dashboard' && (
-             <div className="mt-8">
-               <Announcements events={takwimEvents} loading={loading} />
-             </div>
-           )}
+           <QuickAccess onNavigate={(view) => setCurrentView(view)} currentView={currentView} />
+           {currentView === 'dashboard' && <div className="mt-8"><Announcements events={takwimEvents} loading={loading} /></div>}
         </section>
 
         {currentView === 'dashboard' ? (
           <>
-            <section className="animate-fade-in" style={{ animationDelay: '0.05s' }}>
-               <Mukadimah />
-            </section>
-
-            <section className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-               <StatCards stats={globalStats} />
-            </section>
-
-            <section className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-               <ActivityGallery 
-                 folderImages={folderImages} 
-                 loading={loading} 
-                 onRefresh={loadData} 
-               />
-            </section>
-
-            <section className="animate-fade-in" style={{ animationDelay: '0.25s' }}>
-               <AIInsights events={takwimEvents} loading={loading} />
-            </section>
-
+            <section className="animate-fade-in" style={{ animationDelay: '0.05s' }}><Mukadimah /></section>
+            <section className="animate-fade-in" style={{ animationDelay: '0.1s' }}><StatCards stats={globalStats} /></section>
+            <section className="animate-fade-in" style={{ animationDelay: '0.2s' }}><ActivityGallery folderImages={folderImages} loading={loading} onRefresh={loadData} /></section>
+            <section className="animate-fade-in" style={{ animationDelay: '0.25s' }}><AIInsights events={takwimEvents} loading={loading} /></section>
             <section id="takwim-seksyen" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-              <div className="lg:col-span-8 flex flex-col">
-                <TakwimCard events={takwimEvents} loading={loading} />
-              </div>
-              <div className="lg:col-span-4 flex flex-col">
-                <PPPMTeras />
-              </div>
+              <div className="lg:col-span-8 flex flex-col"><TakwimCard events={takwimEvents} loading={loading} /></div>
+              <div className="lg:col-span-4 flex flex-col"><PPPMTeras /></div>
             </section>
-
-            <section className="w-full">
-              <ProgramsTable programs={programs} loading={loading} />
-            </section>
+            <section className="w-full"><ProgramsTable programs={programs} loading={loading} /></section>
           </>
         ) : currentView === 'pbd2025' ? (
-          <section className="w-full">
-            <PBD2025Page 
-              data={pbd2025Data}
-              loading={loading}
-              onBack={() => setCurrentView('dashboard')}
-            />
-          </section>
+          <PBD2025Page data={pbd2025Data} loading={loading} onBack={() => setCurrentView('dashboard')} />
         ) : currentView === 'takwim' ? (
-          <section className="w-full">
-            <TakwimPage 
-              events={takwimEvents} 
-              loading={loading} 
-              onBack={() => setCurrentView('dashboard')} 
-            />
-          </section>
+          <TakwimPage events={takwimEvents} loading={loading} onBack={() => setCurrentView('dashboard')} />
         ) : currentView === 'carta' ? (
-          <section className="w-full">
-            <CartaOrganisasi onBack={() => setCurrentView('dashboard')} />
-          </section>
+          <CartaOrganisasi onBack={() => setCurrentView('dashboard')} />
         ) : currentView === 'panitia' ? (
-          <section className="w-full">
-            <PanitiaPage onBack={() => setCurrentView('dashboard')} />
-          </section>
+          <PanitiaPage onBack={() => setCurrentView('dashboard')} />
         ) : currentView === 'buku' ? (
-          <section className="w-full">
-            <BukuPengurusan onBack={() => setCurrentView('dashboard')} />
-          </section>
+          <BukuPengurusan onBack={() => setCurrentView('dashboard')} />
         ) : currentView === 'guru' ? (
-          <section className="w-full">
-            <SenaraiGuru 
-              teachers={teachers} 
-              loading={loading} 
-              onBack={() => setCurrentView('dashboard')} 
-            />
-          </section>
+          <SenaraiGuru teachers={teachers} loading={loading} onBack={() => setCurrentView('dashboard')} />
         ) : (
-          <section className="w-full">
-            <EOPRKurikulum onBack={() => setCurrentView('dashboard')} />
-          </section>
+          <EOPRKurikulum onBack={() => setCurrentView('dashboard')} />
         )}
 
-        <section className="w-full pt-8 border-t border-slate-100">
-           <TeacherPortals />
-        </section>
+        <section className="w-full pt-8 border-t border-slate-100"><TeacherPortals /></section>
       </main>
 
       <footer className="mt-20 pt-10 border-t border-slate-200 text-center">
-         <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">UNIT KURIKULUM SK PEKAN TENOM DIGITAL CORE 2026</p>
+         <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">UNIT KURIKULUM DIGITAL CORE 2026</p>
+         <p className="text-slate-400 text-[8px] font-bold uppercase tracking-widest mt-2">Sistem Integrasi: UNIKUR SKPTEN</p>
       </footer>
 
       <AIConsultant />

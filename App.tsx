@@ -110,7 +110,7 @@ const App: React.FC = () => {
         ) : currentView === 'guru' ? (
           <SenaraiGuru teachers={teachers} loading={loading} onBack={() => setCurrentView('dashboard')} />
         ) : (
-          <EOPRKurikulum onBack={() => setCurrentView('dashboard')} />
+          <EOPRKurikulum onBack={() => setCurrentView('dashboard')} folderImages={folderImages} />
         )}
 
         <section className="w-full pt-8 border-t border-slate-100"><TeacherPortals /></section>

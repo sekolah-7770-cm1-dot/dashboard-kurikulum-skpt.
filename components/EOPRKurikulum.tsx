@@ -1,11 +1,13 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { MONTH_NAMES } from '../constants';
 
 interface EOPRKurikulumProps {
   onBack: () => void;
+  folderImages?: {url: string, name: string, dateStr?: string}[];
 }
 
-const EOPRKurikulum: React.FC<EOPRKurikulumProps> = ({ onBack }) => {
+const EOPRKurikulum: React.FC<EOPRKurikulumProps> = ({ onBack, folderImages = [] }) => {
   const APPSHEET_URL = "https://www.appsheet.com/newshortcut/9f42ef3e-2741-46b4-8751-67c13379fc21";
   
   const posterImage = "https://lh3.googleusercontent.com/d/1sNNV1ML-sXCirnHDZN5er7UjChYD-uRh=s1600";
@@ -20,6 +22,50 @@ const EOPRKurikulum: React.FC<EOPRKurikulumProps> = ({ onBack }) => {
     { title: 'Data Headcount & UASA', desc: 'Pemantauan sasaran ETR dan analisis pencapaian peperiksaan.', status: 'Penting', icon: '📈' },
     { title: 'Pengurusan Fail Digital', desc: 'Sistem arkib digital bersepadu bagi dokumen dan minit mesyuarat.', status: 'Tersusun', icon: '📁' },
   ];
+
+  // Algoritma untuk mengambil 10 gambar unik dari bulan yang berbeza, berubah setiap hari
+  const monthlyHighlights = useMemo(() => {
+    if (!folderImages || folderImages.length === 0) return [];
+    
+    // Jana seed unik berdasarkan hari ini (YYYYMMDD)
+    const now = new Date();
+    const daySeed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+    
+    const result: {url: string, month: string}[] = [];
+
+    // Loop untuk 10 bulan pertama (JAN - OKT)
+    for (let m = 0; m < 10; m++) {
+      // Cari semua gambar yang berada dalam bulan m + 1
+      const imgsInMonth = folderImages.filter(img => {
+        if (!img.dateStr) return false;
+        const parts = img.dateStr.split(/[\/-]/);
+        if (parts.length < 2) return false;
+        // Match sama ada bahagian pertama (M) atau kedua (D) adalah bulan yang dicari
+        // Ini untuk menangani pelbagai format tarikh CSV
+        const val1 = parseInt(parts[0]);
+        const val2 = parseInt(parts[1]);
+        return val1 === m + 1 || val2 === m + 1;
+      });
+
+      if (imgsInMonth.length > 0) {
+        // Pilih satu gambar secara rawak tetapi stabil bagi hari tersebut
+        const selectedIdx = daySeed % imgsInMonth.length;
+        result.push({ 
+          url: imgsInMonth[selectedIdx].url, 
+          month: MONTH_NAMES[m].substring(0, 3).toUpperCase() 
+        });
+      } else {
+        // Jika tiada gambar bagi bulan tersebut, ambil mana-mana gambar secara stabil
+        const fallbackIdx = (daySeed + m) % folderImages.length;
+        result.push({ 
+          url: folderImages[fallbackIdx].url, 
+          month: MONTH_NAMES[m].substring(0, 3).toUpperCase() 
+        });
+      }
+    }
+
+    return result;
+  }, [folderImages]);
 
   return (
     <div className="animate-fade-in min-h-screen pb-20">
@@ -73,7 +119,6 @@ const EOPRKurikulum: React.FC<EOPRKurikulumProps> = ({ onBack }) => {
               {/* COMPACT CARD WITH ENLARGED AVATAR */}
               <div className="mb-10 p-6 md:p-10 bg-blue-50/40 border border-blue-100 rounded-[3rem] relative flex flex-col sm:flex-row items-center gap-10 shadow-sm transition-all hover:bg-white hover:shadow-xl group">
                 <div className="relative flex-shrink-0">
-                  {/* Avatar size increased (w-32 -> w-48) */}
                   <div className="w-36 h-36 md:w-48 md:h-48 bg-white rounded-[2rem] shadow-2xl flex items-center justify-center border-4 border-white p-1 transform transition-all duration-700 group-hover:scale-105 group-hover:shadow-blue-200">
                     <img 
                       src={teacherAvatar} 
@@ -96,8 +141,8 @@ const EOPRKurikulum: React.FC<EOPRKurikulumProps> = ({ onBack }) => {
                     </span>
                   </div>
                   
-                  <h2 className="text-lg md:text-xl font-black text-slate-900 uppercase leading-tight mb-3 tracking-tighter">
-                    cikgu Din – PEMBANTU DIGITAL SKPTEN
+                  <h2 className="text-lg md:text-xl font-black text-slate-900 uppercase leading-tight mb-3 tracking-normal">
+                    cikgu Din – PEMBANTU DIGITAL UNIT KURIKULUM SKPTEN
                   </h2>
                   
                   <p className="text-[11px] md:text-[13px] text-slate-500 font-bold italic leading-relaxed max-w-lg opacity-90">
@@ -107,16 +152,48 @@ const EOPRKurikulum: React.FC<EOPRKurikulumProps> = ({ onBack }) => {
               </div>
 
               {/* Descriptions & Access */}
-              <div className="mb-10 pl-2">
+              <div className="mb-8 pl-2">
                 <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] mb-3">Gateway Access</h3>
-                <h1 className="text-4xl md:text-5xl font-black text-slate-800 leading-none mb-6 tracking-tighter">
+                <h1 className="text-4xl md:text-5xl font-black text-slate-800 leading-none mb-4 tracking-tighter">
                   PUSAT KAWALAN <span className="text-blue-600">eOPR</span>
                 </h1>
                 <p className="text-slate-600 text-[13px] font-medium leading-relaxed max-w-xl">
-                  Gerbang Penyelarasan eOPR Unit Kurikulum SKPTEN adalah pemacu transformasi digital yang menyediakan akses strategik bagi pelaporan dan pemantauan prestasi akademik secara dinamik dan bersepadu. Melalui konsep <span className="text-blue-600 font-black">One Page Report</span>, sistem ini bermatlamat untuk memperkasakan kepimpinan instruksional.
+                  Gerbang Penyelarasan eOPR Unit Kurikulum SKPTEN adalah pemacu transformasi digital yang menyediakan akses strategik bagi pelaporan dan pemantauan prestasi akademik secara dinamik dan bersepadu.
                 </p>
               </div>
 
+              {/* DECORATIVE MONTHLY GALLERY - Filling the empty space with daily rotation */}
+              <div className="mb-10 p-6 bg-slate-50/50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group/gallery">
+                 <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-3">
+                       <div className="w-1.5 h-5 bg-blue-600 rounded-full"></div>
+                       <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-[0.2em]">SOROTAN AKTIVITI BULANAN</h3>
+                    </div>
+                    <div className="flex flex-col items-end">
+                       <span className="text-[8px] font-black text-blue-500 uppercase tracking-widest">Koleksi Lensa Unit Kurikulum SKPTEN</span>
+                       <span className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter">*Gambar berubah setiap hari</span>
+                    </div>
+                 </div>
+                 
+                 <div className="grid grid-cols-5 gap-3">
+                    {monthlyHighlights.map((img, idx) => (
+                      <div key={idx} className="flex flex-col items-center gap-2 group/img">
+                         <div className="w-full aspect-square bg-white rounded-2xl overflow-hidden border-2 border-white shadow-sm transition-all duration-500 group-hover/img:-translate-y-1 group-hover/img:shadow-md group-hover/img:border-blue-400">
+                            <img 
+                              src={img.url} 
+                              alt={`Aktiviti ${img.month}`} 
+                              className="w-full h-full object-cover grayscale-[0.3] group-hover/img:grayscale-0 transition-all duration-700" 
+                            />
+                         </div>
+                         <span className="text-[8px] font-black text-slate-400 uppercase group-hover/img:text-blue-600 transition-colors tracking-tighter">
+                            {img.month}
+                         </span>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+
+              {/* Modules Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
                 {modules.map((m, idx) => (
                   <div key={idx} className="bg-slate-50/50 border border-slate-100 p-5 rounded-[2rem] hover:bg-white hover:shadow-xl hover:border-blue-200 transition-all duration-500 group cursor-default">

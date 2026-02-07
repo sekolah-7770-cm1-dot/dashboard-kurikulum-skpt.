@@ -80,7 +80,7 @@ const isSubjectMatch = (recordSubjek: string, targetId: string) => {
 const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
   const [selectedSubjek, setSelectedSubjek] = useState<string>('BM');
   const [selectedKelas, setSelectedKelas] = useState<string>('Semua');
-  const [aiInsight, setAiInsight] = useState<string>('Cgu Din sedang menganalisis...');
+  const [aiInsight, setAiInsight] = useState<string>('Cgu Din sedang menganalisis data...');
   const [isAnalysing, setIsAnalysing] = useState(false);
 
   const teacherAvatar = "https://lh3.googleusercontent.com/d/1lCegcUF3-GYyTPbSidhJdSfU_AZdyj8p=s1000";
@@ -90,9 +90,10 @@ const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
   }, [data]);
 
   const allAvailableClasses = useMemo(() => {
-    const list = Array.from(new Set(data.map(d => d.kelas)))
+    // FIX: Provide explicit string type to Array.from to ensure correct type inference in filter and sort
+    const list = Array.from<string>(new Set(data.map(d => d.kelas)))
       .filter(Boolean)
-      .sort((a, b) => (a as string).localeCompare(b as string));
+      .sort((a, b) => a.localeCompare(b));
     return ['Semua', ...list];
   }, [data]);
 
@@ -135,17 +136,23 @@ const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
     return { tp1, tp2, tp3, tp4, tp5, tp6, total, mtm, quality };
   }, [data, selectedSubjek, selectedKelas]);
 
-  const tpYearlyBreakdown = useMemo(() => {
-    const years = ['1', '2', '3', '4', '5', '6'];
-    return years.map(y => {
-      const yearData = data.filter(d => d.kelas.startsWith(y) && isSubjectMatch(d.subjek, selectedSubjek));
+  const tpClassBreakdown = useMemo(() => {
+    // Ambil semua kelas yang ada data bagi subjek terpilih
+    // FIX: Provide explicit string type to Array.from to ensure subjectClasses is string[]
+    const subjectClasses = Array.from<string>(new Set(
+      data.filter(d => isSubjectMatch(d.subjek, selectedSubjek)).map(d => d.kelas)
+    )).sort((a, b) => a.localeCompare(b));
+
+    // FIX: Explicitly type parameter k as string
+    return subjectClasses.map((k: string) => {
+      const classData = data.filter(d => d.kelas === k && isSubjectMatch(d.subjek, selectedSubjek));
       let tp1 = 0, tp2 = 0, tp3 = 0, tp4 = 0, tp5 = 0, tp6 = 0;
-      yearData.forEach(d => {
+      classData.forEach(d => {
         tp1 += Number(d.tp1) || 0; tp2 += Number(d.tp2) || 0;
         tp3 += Number(d.tp3) || 0; tp4 += Number(d.tp4) || 0;
         tp5 += Number(d.tp5) || 0; tp6 += Number(d.tp6) || 0;
       });
-      return { year: `TAHUN ${y}`, tp1, tp2, tp3, tp4, tp5, tp6 };
+      return { kelas: k.toUpperCase(), tp1, tp2, tp3, tp4, tp5, tp6 };
     });
   }, [data, selectedSubjek]);
 
@@ -224,119 +231,303 @@ const PBD2025Page: React.FC<PBD2025PageProps> = ({ data, loading, onBack }) => {
         </div>
       </div>
 
-      {/* Hero Header PBD Section - RAPAT & PANJANG */}
-      <div className="relative overflow-hidden bg-slate-900 rounded-[3.5rem] p-8 md:p-14 text-white shadow-2xl border border-white/5">
-         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full -mr-20 -mt-20"></div>
-         <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full -ml-20 -mb-20"></div>
+      {/* Hero Header PBD Section */}
+      <div className="relative overflow-hidden bg-[#0f172a] rounded-[3.5rem] p-8 md:p-16 text-white shadow-2xl border border-white/5 group">
+         <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-600/10 via-transparent to-indigo-600/5 pointer-events-none"></div>
+         <div className="absolute -top-20 -right-20 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full group-hover:bg-blue-500/20 transition-all duration-1000"></div>
          
          <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <span className="bg-blue-600/20 text-blue-400 text-[10px] font-black px-4 py-1.5 rounded-full border border-blue-500/30 uppercase tracking-[0.2em]">
+            <div className="flex items-center gap-3 mb-8">
+              <span className="bg-blue-600/20 text-blue-400 text-[10px] font-black px-5 py-2 rounded-full border border-blue-500/30 uppercase tracking-[0.3em]">
                 Pentaksiran Bilik Darjah (PBD)
               </span>
-              <div className="h-px w-12 bg-slate-700"></div>
-              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">UNIT KURIKULUM DIGITAL CORE</span>
+              <div className="h-px w-16 bg-slate-700"></div>
+              <span className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em]">UNIT KURIKULUM DIGITAL CORE</span>
             </div>
             
-            <h1 className="text-3xl md:text-6xl font-black text-white leading-none mb-6 tracking-tight uppercase">
-              ANALISIS PRESTASI <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-tight">AKADEMIK</span>
+            <h1 className="text-4xl md:text-7xl font-black text-white leading-[0.9] mb-8 tracking-tighter uppercase">
+              ANALISIS PRESTASI <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-emerald-400">AKADEMIK STRATEGIK</span>
             </h1>
             
-            <div className="max-w-4xl space-y-2">
-               <p className="text-slate-300 text-sm md:text-lg font-medium leading-tight opacity-90">
+            <div className="max-w-4xl space-y-4 border-l-4 border-blue-600 pl-8 py-2">
+               <p className="text-slate-300 text-sm md:text-xl font-medium leading-relaxed opacity-90">
                  Membangun potensi insan melalui kepimpinan instruksional yang berimpak tinggi, berintegriti, dan berteraskan data raya. 
-                 Kita tekad menerajui transformasi pendidikan digital secara bersepadu menerusi ekosistem UNIT KURIKULUM Digital Core selaras dengan <span className="text-white font-bold italic">Aspirasi KPM 2026-2035</span>.
+                 Kita tekad menerajui transformasi pendidikan digital secara bersepadu menerusi ekosistem <span className="text-white font-bold">UNIT KURIKULUM Digital Core</span> selaras dengan <span className="text-blue-400 font-bold italic">Aspirasi KPM 2026-2035</span>.
                </p>
-               <div className="flex items-center gap-4 text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest italic pt-1">
-                 <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                 </svg>
-                 #UNIKURSKPTEN #INSPIRASICEMERLANG
+               <div className="flex items-center gap-6 text-slate-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em] italic">
+                 <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                    #UNITKURIKULUM
+                 </div>
+                 <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    #INSPIRASICEMERLANG
+                 </div>
                </div>
             </div>
          </div>
-         <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600 w-full opacity-30"></div>
+         <div className="absolute bottom-0 left-0 h-1.5 bg-gradient-to-r from-blue-600 via-emerald-500 to-blue-600 w-full opacity-40"></div>
       </div>
 
-      {/* Analytics Visualization */}
-      <div className="bg-white rounded-[3.5rem] p-6 md:p-10 border border-slate-200 shadow-sm flex flex-col gap-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-           <div className="text-center p-6 bg-slate-50/40 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl transition-all group">
-              <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">MTM (TP3-6)</p>
-              <p className="text-4xl md:text-5xl font-black text-emerald-500 tracking-tight">{stats.mtm}%</p>
-           </div>
-           <div className="text-center p-6 bg-slate-50/40 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl transition-all group">
-              <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">Kualiti (TP5-6)</p>
-              <p className="text-4xl md:text-5xl font-black text-blue-600 tracking-tight">{stats.quality}%</p>
-           </div>
-           <div className="text-center p-6 bg-slate-50/40 rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl transition-all group">
-              <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-[0.2em]">Jml Murid</p>
-              <p className="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">{stats.total}</p>
-           </div>
-        </div>
+      {/* Core Subjects Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {topSummaries.map(s => {
+          const isActive = isSubjectMatch(selectedSubjek, s.id);
+          return (
+            <button 
+              key={s.id} 
+              onClick={() => setSelectedSubjek(s.id)}
+              className={`p-8 rounded-[3rem] flex flex-col items-start transition-all duration-500 active:scale-95 text-left w-full group overflow-hidden relative border-2 ${
+                isActive 
+                ? `${s.activeBg} ${s.activeText} ${s.ring} border-white/20 shadow-2xl -translate-y-2` 
+                : `${s.inactiveBg} ${s.inactiveText} border-slate-100 shadow-sm hover:border-slate-300 hover:-translate-y-1`
+              }`}
+            >
+              <div className="flex items-center gap-4 mb-6 relative z-10">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl transition-all shadow-lg ${isActive ? 'bg-white/20' : 'bg-white'}`}>
+                   {s.icon}
+                </div>
+                <h4 className={`text-xs font-black uppercase tracking-widest ${isActive ? 'text-white' : s.accentText}`}>
+                  {s.name}
+                </h4>
+              </div>
+              <div className="mb-8 relative z-10">
+                <p className={`text-[9px] font-black uppercase tracking-[0.3em] mb-1 ${isActive ? 'text-white/60' : 'text-slate-400'}`}>TAHAP PENGUASAAN</p>
+                <div className="flex items-baseline gap-2">
+                  <span className={`text-5xl font-black tracking-tighter ${isActive ? 'text-white' : 'text-slate-900'}`}>{s.pct.toFixed(1)}%</span>
+                  <span className={`text-[10px] font-bold uppercase ${isActive ? 'text-white/80' : 'text-slate-500'}`}>MTM</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2.5 w-full mt-auto relative z-10">
+                 {[
+                   { label: 'TP1-2', val: s.tp1 + s.tp2, color: isActive ? 'text-white/70' : 'text-slate-400' },
+                   { label: 'TP3-4', val: s.tp3 + s.tp4, color: isActive ? 'text-white font-black' : 'text-emerald-600 font-black' },
+                   { label: 'TP5-6', val: s.tp5 + s.tp6, color: isActive ? 'text-white font-black' : 'text-blue-600 font-black' }
+                 ].map((tp, idx) => (
+                   <div key={idx} className={`p-3 rounded-2xl border flex flex-col items-center transition-all ${isActive ? 'bg-white/10 border-white/10' : 'bg-white border-slate-50 shadow-sm'}`}>
+                      <span className={`text-[7px] font-black uppercase mb-1 tracking-widest ${isActive ? 'text-white/50' : 'text-slate-400'}`}>{tp.label}</span>
+                      <span className={`text-[11px] ${tp.color}`}>{tp.val}</span>
+                   </div>
+                 ))}
+              </div>
+              <div className={`absolute -bottom-10 -right-10 w-40 h-40 rounded-full blur-3xl opacity-10 transition-transform duration-1000 group-hover:scale-150 ${isActive ? 'bg-white' : s.activeBg}`}></div>
+            </button>
+          );
+        })}
+      </div>
 
-        <div className="min-h-[280px] flex items-end justify-around gap-4 px-4 pb-4">
-           {[
-             { label: 'TP1', val: stats.tp1, color: 'bg-slate-100 border-slate-200' },
-             { label: 'TP2', val: stats.tp2, color: 'bg-slate-400 border-slate-500' },
-             { label: 'TP3', val: stats.tp3, color: 'bg-[#fbbf24] border-[#d97706]' },
-             { label: 'TP4', val: stats.tp4, color: 'bg-[#10b981] border-[#059669]' },
-             { label: 'TP5', val: stats.tp5, color: 'bg-[#3b82f6] border-[#2563eb]' },
-             { label: 'TP6', val: stats.tp6, color: 'bg-[#6366f1] border-[#4f46e5]' }
-           ].map(d => {
-             const h = stats.total > 0 ? (d.val / stats.total) * 230 : 0;
-             return (
-               <div key={d.label} className="flex-1 flex flex-col items-center gap-4 group h-full justify-end">
-                  <div className="relative w-full flex flex-col items-center">
-                     <div className="absolute -top-10 w-9 h-9 bg-[#1e293b] rounded-full flex items-center justify-center text-white text-[11px] font-black shadow-lg z-20 group-hover:scale-110 transition-transform">
-                        {d.val}
-                     </div>
-                     <div 
-                       className={`${d.color} w-full max-w-[70px] rounded-t-[2rem] transition-all duration-1000 shadow-md`} 
-                       style={{ height: `${Math.max(h, 12)}px` }}
-                     ></div>
-                  </div>
-                  <span className="text-[12px] font-black text-slate-800 uppercase tracking-widest">{d.label}</span>
+      {/* Analysis Focus Header */}
+      <div className="bg-white rounded-[3.5rem] p-10 md:p-14 border-2 border-slate-100 shadow-sm relative overflow-hidden group">
+         <div className="absolute top-0 right-0 w-80 h-80 bg-blue-50/50 blur-[100px] rounded-full pointer-events-none"></div>
+         <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+            <div className={`w-24 h-24 md:w-32 md:h-32 rounded-[2.5rem] flex items-center justify-center text-5xl shadow-2xl transition-all group-hover:rotate-6 duration-700 ${CORE_SUBJECTS.find(s => isSubjectMatch(selectedSubjek, s.id))?.activeBg || 'bg-slate-900'} text-white border-4 border-white`}>
+               {CORE_SUBJECTS.find(s => isSubjectMatch(selectedSubjek, s.id))?.icon || '📚'}
+            </div>
+            <div className="space-y-4 text-center md:text-left flex-1">
+               <div className="flex flex-wrap justify-center md:justify-start items-center gap-4">
+                  <span className="px-6 py-2 bg-slate-900 text-white text-[10px] font-black rounded-xl uppercase tracking-widest shadow-lg">Analisis Fokus</span>
+                  <div className="h-px w-12 bg-slate-200"></div>
+                  <span className="text-slate-400 text-[11px] font-black uppercase tracking-[0.3em]">SK PEKAN TENOM</span>
                </div>
-             );
-           })}
+               <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-none tracking-tighter uppercase">
+                  {CORE_SUBJECTS.find(s => isSubjectMatch(selectedSubjek, s.id))?.name || selectedSubjek}
+                  <span className="text-blue-600 ml-4">{selectedKelas}</span>
+               </h1>
+            </div>
+            <div className="hidden lg:flex items-center gap-8 pl-10 border-l-2 border-slate-100">
+               <div className="text-right">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">JUMLAH MURID</p>
+                  <p className="text-4xl font-black text-slate-900 tracking-tighter">{stats.total}</p>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      {/* Detailed Stats & Chart */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-8 bg-white rounded-[3.5rem] p-10 border-2 border-slate-100 shadow-sm flex flex-col gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div className="p-8 bg-emerald-50/50 rounded-[2.5rem] border border-emerald-100 hover:bg-emerald-50 transition-all group flex flex-col items-center text-center">
+                <p className="text-[10px] font-black text-emerald-600 uppercase mb-3 tracking-[0.3em]">MTM (TP3-TP6)</p>
+                <div className="flex items-baseline gap-2">
+                   <span className="text-5xl md:text-7xl font-black text-emerald-600 tracking-tighter">{stats.mtm}%</span>
+                </div>
+                <div className="w-full h-2 bg-emerald-100 rounded-full mt-6 overflow-hidden">
+                   <div className="h-full bg-emerald-500 transition-all duration-1000" style={{ width: `${stats.mtm}%` }}></div>
+                </div>
+             </div>
+             <div className="p-8 bg-blue-50/50 rounded-[2.5rem] border border-blue-100 hover:bg-blue-50 transition-all group flex flex-col items-center text-center">
+                <p className="text-[10px] font-black text-blue-600 uppercase mb-3 tracking-[0.3em]">KUALITI (TP5-TP6)</p>
+                <div className="flex items-baseline gap-2">
+                   <span className="text-5xl md:text-7xl font-black text-blue-600 tracking-tighter">{stats.quality}%</span>
+                </div>
+                <div className="w-full h-2 bg-blue-100 rounded-full mt-6 overflow-hidden">
+                   <div className="h-full bg-blue-600 transition-all duration-1000" style={{ width: `${stats.quality}%` }}></div>
+                </div>
+             </div>
+          </div>
+
+          <div className="min-h-[320px] flex items-end justify-around gap-6 px-4 pb-4 bg-slate-50/30 rounded-[3rem] p-8 border border-slate-50">
+             {[
+               { label: 'TP1', val: stats.tp1, color: 'bg-slate-200 border-slate-300' },
+               { label: 'TP2', val: stats.tp2, color: 'bg-slate-400 border-slate-500' },
+               { label: 'TP3', val: stats.tp3, color: 'bg-amber-400 border-amber-500' },
+               { label: 'TP4', val: stats.tp4, color: 'bg-emerald-500 border-emerald-600' },
+               { label: 'TP5', val: stats.tp5, color: 'bg-blue-600 border-blue-700' },
+               { label: 'TP6', val: stats.tp6, color: 'bg-indigo-600 border-indigo-700' }
+             ].map(d => {
+               const h = stats.total > 0 ? (d.val / stats.total) * 240 : 0;
+               return (
+                 <div key={d.label} className="flex-1 flex flex-col items-center gap-5 group h-full justify-end">
+                    <div className="relative w-full flex flex-col items-center">
+                       <div className="absolute -top-12 bg-slate-900 text-white text-[11px] font-black px-3 py-1.5 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-all transform -translate-y-2 group-hover:translate-y-0">
+                          {d.val} Murid
+                       </div>
+                       <div 
+                         className={`${d.color} w-full max-w-[80px] rounded-t-[2.5rem] transition-all duration-1000 shadow-2xl group-hover:brightness-110`} 
+                         style={{ height: `${Math.max(h, 15)}px` }}
+                       ></div>
+                    </div>
+                    <span className="text-xs font-black text-slate-800 uppercase tracking-widest">{d.label}</span>
+                 </div>
+               );
+             })}
+          </div>
+        </div>
+
+        {/* AI Insight Sidebar */}
+        <div className="lg:col-span-4 flex flex-col gap-8">
+           <div className="bg-[#0f172a] rounded-[3.5rem] p-10 text-white shadow-2xl relative overflow-hidden flex flex-col h-full border border-white/5">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-blue-600/10 blur-[80px] rounded-full"></div>
+              
+              <div className="flex items-center gap-6 mb-10">
+                 <div className="relative">
+                    <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center border-4 border-blue-500/50 p-1 overflow-hidden shadow-2xl transform rotate-3">
+                       <img src={teacherAvatar} alt="Cgu Din" className="w-full h-full object-contain scale-125 translate-y-2" />
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 bg-emerald-500 w-6 h-6 rounded-full border-4 border-[#0f172a] animate-pulse"></div>
+                 </div>
+                 <div>
+                    <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] mb-1">Pakar Data AI</h4>
+                    <h3 className="text-xl font-black uppercase tracking-tight">CIKGU DIN AI</h3>
+                 </div>
+              </div>
+
+              <div className="flex-1 flex flex-col">
+                 <h3 className="text-2xl font-black uppercase tracking-tight text-blue-100 mb-6 flex items-center gap-3">
+                   <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
+                   Ulasan Strategik
+                 </h3>
+                 <div className="relative p-6 bg-white/5 rounded-[2.5rem] border border-white/10 italic text-slate-300 leading-relaxed text-base">
+                    {isAnalysing ? (
+                      <div className="space-y-3">
+                         <div className="h-3 bg-white/10 rounded-full w-full animate-pulse"></div>
+                         <div className="h-3 bg-white/10 rounded-full w-[80%] animate-pulse"></div>
+                         <div className="h-3 bg-white/10 rounded-full w-[90%] animate-pulse"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="absolute -top-4 -left-2 text-6xl text-blue-500/20 font-serif leading-none">“</span>
+                        {aiInsight}
+                        <span className="absolute -bottom-10 -right-2 text-6xl text-blue-500/20 font-serif leading-none">”</span>
+                      </>
+                    )}
+                 </div>
+              </div>
+
+              <div className="mt-14 pt-6 border-t border-white/5 flex items-center justify-between opacity-50">
+                 <p className="text-[8px] font-black uppercase tracking-[0.5em]">System Core Active</p>
+                 <div className="flex gap-1">
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                    <div className="w-1 h-1 bg-white rounded-full"></div>
+                 </div>
+              </div>
+           </div>
         </div>
       </div>
-      
-      {/* Rest of component stays the same */}
-      <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-200 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-2xl">
-         <div className="flex items-center gap-4 mb-10">
-            <div className="w-1.5 h-8 bg-blue-600 rounded-full"></div>
-            <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Taburan Tahap Penguasaan (TP) Mengikut Tahun</h3>
-         </div>
-         <div className="overflow-x-auto">
-            <table className="w-full text-left">
-               <thead>
-                  <tr className="bg-slate-50/50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
-                     <th className="py-6 px-8">Tahun</th>
-                     <th className="py-6 px-4 text-center">TP1</th>
-                     <th className="py-6 px-4 text-center">TP2</th>
-                     <th className="py-6 px-4 text-center">TP3</th>
-                     <th className="py-6 px-4 text-center">TP4</th>
-                     <th className="py-6 px-4 text-center">TP5</th>
-                     <th className="py-6 px-4 text-center">TP6</th>
-                  </tr>
-               </thead>
-               <tbody className="divide-y divide-slate-50">
-                  {tpYearlyBreakdown.map((row, i) => (
-                     <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
-                        <td className="py-5 px-8 font-black text-slate-700 text-xs tracking-wider">{row.year}</td>
-                        <td className="py-5 px-4 text-center font-black text-slate-400 text-sm">{row.tp1}</td>
-                        <td className="py-5 px-4 text-center font-black text-slate-500 text-sm">{row.tp2}</td>
-                        <td className="py-5 px-4 text-center font-black text-amber-500 text-sm">{row.tp3}</td>
-                        <td className="py-5 px-4 text-center font-black text-emerald-500 text-sm">{row.tp4}</td>
-                        <td className="py-5 px-4 text-center font-black text-blue-600 text-sm">{row.tp5}</td>
-                        <td className="py-5 px-4 text-center font-black text-indigo-600 text-sm">{row.tp6}</td>
+
+      {/* Comparison Tables */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+         <div className="bg-white rounded-[3.5rem] p-10 border-2 border-slate-100 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-2xl">
+            <div className="flex items-center gap-4 mb-10">
+               <div className="w-2 h-10 bg-blue-600 rounded-full"></div>
+               <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Taburan TP Mengikut Kelas</h3>
+            </div>
+            <div className="overflow-x-auto custom-scrollbar">
+               <table className="w-full text-left">
+                  <thead>
+                     <tr className="bg-slate-50/50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b-2 border-slate-100">
+                        <th className="py-6 px-8">Kelas</th>
+                        <th className="py-6 px-4 text-center">TP1-2</th>
+                        <th className="py-6 px-4 text-center">TP3</th>
+                        <th className="py-6 px-4 text-center">TP4</th>
+                        <th className="py-6 px-4 text-center">TP5</th>
+                        <th className="py-6 px-4 text-center">TP6</th>
                      </tr>
-                  ))}
-               </tbody>
-            </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                     {tpClassBreakdown.map((row, i) => (
+                        <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
+                           <td className="py-6 px-8 font-black text-slate-700 text-xs tracking-wider">{row.kelas}</td>
+                           <td className="py-6 px-4 text-center font-black text-slate-400 text-sm">{row.tp1 + row.tp2}</td>
+                           <td className="py-6 px-4 text-center font-black text-amber-500 text-sm">{row.tp3}</td>
+                           <td className="py-6 px-4 text-center font-black text-emerald-500 text-sm">{row.tp4}</td>
+                           <td className="py-6 px-4 text-center font-black text-blue-600 text-sm">{row.tp5}</td>
+                           <td className="py-6 px-4 text-center font-black text-indigo-600 text-sm">{row.tp6}</td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </table>
+            </div>
          </div>
+
+         <div className="bg-white rounded-[3.5rem] p-10 border-2 border-slate-100 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-2xl">
+            <div className="flex items-center gap-4 mb-10">
+               <div className="w-2 h-10 bg-emerald-500 rounded-full"></div>
+               <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Analisis Kelas Bestari vs Cemerlang</h3>
+            </div>
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50/50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b-2 border-slate-100">
+                  <tr>
+                    <th className="py-6 px-8">Tahun</th>
+                    <th className="py-6 px-8 text-center">Bestari (%)</th>
+                    <th className="py-6 px-8 text-center">Cemerlang (%)</th>
+                    <th className="py-6 px-8 text-center">Jurang</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {classComparison.map((row, i) => {
+                    const diff = (parseFloat(row.bestari) - parseFloat(row.cemerlang)).toFixed(1);
+                    const isPositive = parseFloat(diff) >= 0;
+                    const isZero = parseFloat(diff) === 0;
+                    return (
+                      <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
+                        <td className="py-6 px-8 font-black text-slate-700 text-xs tracking-wider">{row.year}</td>
+                        <td className="py-6 px-8 text-center font-black text-blue-600 text-sm">{row.bestari}%</td>
+                        <td className="py-6 px-8 text-center font-black text-emerald-600 text-sm">{row.cemerlang}%</td>
+                        <td className="py-6 px-8 text-center">
+                           <span className={`text-[11px] font-black px-5 py-2 rounded-2xl shadow-sm ${
+                              isZero ? 'bg-slate-50 text-slate-500' :
+                              isPositive ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                           }`}>
+                             {isPositive && !isZero ? '+' : ''}{diff}%
+                           </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+         </div>
+      </div>
+
+      <div className="text-center pt-10">
+         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.8em] opacity-40">
+           UNIT KURIKULUM DIGITAL CORE 2026
+         </p>
       </div>
     </div>
   );

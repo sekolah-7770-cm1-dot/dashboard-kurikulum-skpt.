@@ -32,7 +32,7 @@ const PanitiaPage: React.FC<PanitiaPageProps> = ({ onBack }) => {
   ];
 
   const panitiaList = [
-    { name: 'Bahasa Melayu', icon: '📖', color: 'border-l-blue-500', category: 'Teras', link: '#' },
+    { name: 'Bahasa Melayu', icon: '📖', color: 'border-l-blue-500', category: 'Teras', link: 'https://drive.google.com/drive/folders/15A1lVCqY9xrrEPSLAT_iFl1fmudi4PxV?usp=drive_link' },
     { name: 'Bahasa Inggeris', icon: '🌐', color: 'border-l-indigo-500', category: 'Teras', link: '#' },
     { name: 'Matematik', icon: '🔢', color: 'border-l-purple-500', category: 'Teras', link: '#' },
     { name: 'Sains', icon: '🧪', color: 'border-l-emerald-500', category: 'Teras', link: '#' },

@@ -33,19 +33,18 @@ const PanitiaPage: React.FC<PanitiaPageProps> = ({ onBack }) => {
 
   const panitiaList = [
     { name: 'Bahasa Melayu', icon: '📖', color: 'border-l-blue-500', category: 'Teras', link: 'https://drive.google.com/drive/folders/15A1lVCqY9xrrEPSLAT_iFl1fmudi4PxV?usp=drive_link' },
-    { name: 'Bahasa Inggeris', icon: '🌐', color: 'border-l-indigo-500', category: 'Teras', link: '#' },
-    { name: 'Matematik', icon: '🔢', color: 'border-l-purple-500', category: 'Teras', link: '#' },
-    { name: 'Sains', icon: '🧪', color: 'border-l-emerald-500', category: 'Teras', link: '#' },
-    { name: 'Pendidikan Islam', icon: '🕌', color: 'border-l-green-600', category: 'Agama/Moral', link: '#' },
-    { name: 'Pendidikan Moral', icon: '⚖️', color: 'border-l-rose-400', category: 'Agama/Moral', link: '#' },
-    { name: 'Sejarah', icon: '🏛️', color: 'border-l-amber-600', category: 'Teras', link: '#' },
-    { name: 'Pendidikan Jasmani', icon: '🏃', color: 'border-l-orange-500', category: 'Sukan/Kesihatan', link: '#' },
-    { name: 'Pendidikan Kesihatan', icon: '🏥', color: 'border-l-red-500', category: 'Sukan/Kesihatan', link: '#' },
-    { name: 'Pendidikan Seni Visual', icon: '🎨', color: 'border-l-pink-500', category: 'Kesenian', link: '#' },
-    { name: 'Pendidikan Muzik', icon: '🎵', color: 'border-l-violet-500', category: 'Kesenian', link: '#' },
-    { name: 'Reka Bentuk dan Teknologi', icon: '🛠️', color: 'border-l-slate-600', category: 'Teknikal', link: '#' },
-    { name: 'Bahasa Arab', icon: '✍️', color: 'border-l-teal-600', category: 'Bahasa Tambahan', link: '#' },
-    { name: 'Bahasa Cina', icon: '🏮', color: 'border-l-red-600', category: 'Bahasa Tambahan', link: '#' },
+    { name: 'Bahasa Inggeris', icon: '🌐', color: 'border-l-indigo-500', category: 'Teras', link: 'https://drive.google.com/drive/folders/1S0qCGjoR6h2P-IBHRHqv6QRuolHdo9tn?usp=drive_link' },
+    { name: 'Matematik', icon: '🔢', color: 'border-l-purple-500', category: 'Teras', link: 'https://drive.google.com/drive/folders/14VnsAPCgeCrR1z4Z42TZ8YmuNisud9Vg?usp=drive_link' },
+    { name: 'Sains', icon: '🧪', color: 'border-l-emerald-500', category: 'Teras', link: 'https://drive.google.com/drive/folders/12NVi8NclJJiL0G35W0_l0zCRTeRSIo5E?usp=drive_link' },
+    { name: 'Pendidikan Islam', icon: '🕌', color: 'border-l-green-600', category: 'Agama/Moral', link: 'https://drive.google.com/drive/folders/1dECBvL-JVQ8IWV11ul-qI5uf5eepPW-h?usp=drive_link' },
+    { name: 'Pendidikan Moral', icon: '⚖️', color: 'border-l-rose-400', category: 'Agama/Moral', link: 'https://drive.google.com/drive/folders/1adcgsSQVhSHqejrVQrVl5wsi3dA9g3ZZ?usp=drive_link' },
+    { name: 'Sejarah', icon: '🏛️', color: 'border-l-amber-600', category: 'Teras', link: 'https://drive.google.com/drive/folders/1j9INi6yalb2tZkfLtw6_MgeaiZQ-viFj?usp=drive_link' },
+    { name: 'Pendidikan Jasmani &Pendidikan Kesihatan', icon: '🏃', color: 'border-l-orange-500', category: 'Sukan/Kesihatan', link: 'https://drive.google.com/drive/folders/1mjOE17INPpCC9ebfALKY9gbrunQbhaIa?usp=drive_link' },
+    { name: 'Pendidikan Seni Visual', icon: '🎨', color: 'border-l-pink-500', category: 'Kesenian', link: 'https://drive.google.com/drive/folders/1N0x8pK9UQIawLGARYRTki6-ScuxgyFgj?usp=drive_link' },
+    { name: 'Pendidikan Muzik', icon: '🎵', color: 'border-l-violet-500', category: 'Kesenian', link: 'https://drive.google.com/drive/folders/1tYJm4cLBV0UhZ10Zx0b5MUukJPX2JYaE?usp=drive_link' },
+    { name: 'Reka Bentuk dan Teknologi', icon: '🛠️', color: 'border-l-slate-600', category: 'Teknikal', link: 'https://drive.google.com/drive/folders/1Dl0pTEOXx0TcBe0awZwglaUfRr1lIBoP?usp=drive_link' },
+    { name: 'Bahasa Arab', icon: '✍️', color: 'border-l-teal-600', category: 'Bahasa Tambahan', link: 'https://drive.google.com/drive/folders/1pu9Xu5B-zxcpzv6pX_prH3Otx9lJ2Jqz?usp=drive_link' },
+    { name: 'Bahasa Cina', icon: '🏮', color: 'border-l-red-600', category: 'Bahasa Tambahan', link: 'https://drive.google.com/drive/folders/18D_Ho586lxXPjBSuSbr2AzQIB5ig0uhe?usp=drive_link' },
   ];
 
   const filteredPanitia = panitiaList.filter(p => 
